@@ -2,17 +2,19 @@ import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { UserPlus, Mail, Lock, User, ArrowRight, Loader } from "lucide-react";
 import { motion } from "framer-motion";
+import { useUserStore } from "../stores/useUserStore";
 function SignupPage() {
-  const loading = true;
   const [formData, setFormData] = useState({
     name: "",
     email: "",
     password: "",
     confirmPassword: "",
   });
+  const {signup, loading} = useUserStore();
+
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log(formData);
+    signup(formData);
   };
   return (
     <div className="flex flex-col justify-center py-12 sm:px-6 lg:px-8">
@@ -71,9 +73,9 @@ function SignupPage() {
                 </div>
                 <input
                   id="email"
-                  type="email"
+                  type="text"
                   required
-                  value={formData.name}
+                  value={formData.email}
                   onChange={(e) =>
                     setFormData({ ...formData, email: e.target.value })
                   }
@@ -95,7 +97,7 @@ function SignupPage() {
                 </div>
                 <input
                   id="password"
-                  type="password"
+                  type="text"
                   required
                   value={formData.password}
                   onChange={(e) =>
@@ -119,7 +121,7 @@ function SignupPage() {
                 </div>
                 <input
                   id="confirmPassword"
-                  type="confirmPassword"
+                  type="text"
                   required
                   value={formData.confirmPassword}
                   onChange={(e) =>
