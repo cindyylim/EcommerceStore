@@ -1,4 +1,4 @@
-import mongoose from "moongose";
+import mongoose from "mongoose";
 
 const couponSchema = new mongoose.Schema(
   {

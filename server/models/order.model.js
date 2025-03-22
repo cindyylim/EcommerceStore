@@ -1,4 +1,4 @@
-import mongoose from "moongoose";
+import mongoose from "mongoose";
 
 const orderSchema = new mongoose.Schema(
   {
