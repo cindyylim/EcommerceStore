@@ -1,6 +1,7 @@
 import SignupPage from "./pages/SignupPage.jsx";
 import HomePage from "./pages/HomePage.jsx";
 import LoginPage from "./pages/LoginPage.jsx";
+import CategoryPage from "./pages/CategoryPage.jsx";
 import Navbar from "./components/Navbar.jsx";
 import { Routes, Route, Navigate } from "react-router-dom";
 import "./index.css";
@@ -28,6 +29,10 @@ function App() {
         <Route
           path="/login"
           element={user ? <Navigate to="/" /> : <LoginPage />}
+        ></Route>
+        <Route
+          path="/category/:category"
+          element={<CategoryPage />}
         ></Route>
       </Routes>
       <Toaster />
