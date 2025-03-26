@@ -1,6 +1,9 @@
 import User from "../models/user.model.js";
 import jwt from "jsonwebtoken";
 import { redis } from "../lib/redis.js";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 const generateTokens = (userId) => {
   const accessToken = jwt.sign({ userId }, process.env.ACESS_TOKEN_SECRET, {

@@ -1,7 +1,11 @@
 import Coupon from "../models/coupon.model.js";
 import Order from "../models/order.model.js";
-import {stripe} from "../lib/stripe.js";
+import Stripe from "stripe";
+import dotenv from "dotenv";
 
+dotenv.config();
+
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 export const createCheckoutSession = async (req, res) => {
   try {
     const { products, couponCode } = req.body;
