@@ -3,7 +3,7 @@ export const addToCart = async (req, res) => {
   try {
     const { productId } = req.body;
     const user = req.user;
-    const existingItem = user.cartItem.find((item) => item.id === productId);
+    const existingItem = user.cartItems.find((item) => item.id === productId);
     if (existingItem) {
       existingItem.quantity += 1;
     } else {
