@@ -5,6 +5,7 @@ import CategoryPage from "./pages/CategoryPage.jsx";
 import CartPage from "./pages/CartPage.jsx";
 import Navbar from "./components/Navbar.jsx";
 import { Routes, Route, Navigate } from "react-router-dom";
+import PurchaseSuccessPage from "./pages/PurchaseSuccessPage.jsx";
 import "./index.css";
 import { Toaster } from "react-hot-toast";
 import { useUserStore } from "./stores/useUserStore.js";
@@ -12,6 +13,7 @@ import { useEffect } from "react";
 import LoadingSpinner from "./components/LoadingSpinner.jsx";
 import AdminPage from "./pages/AdminPage.jsx";
 import { useCartStore } from "./stores/useCartStore.js";
+import PurchaseCancelPage from "./pages/PurchaseCancelPage.jsx";
 
 function App() {
   const { user, checkAuth, checkingAuth } = useUserStore();
@@ -27,7 +29,7 @@ function App() {
   }, [getCartItems, user]);
 
   if (checkingAuth) return <LoadingSpinner />;
-  
+
   return (
     <div className="min-h-screen bg-gray-900 text-white relative overflow-hidden">
       <div className="relative pt-20"></div>
@@ -53,6 +55,14 @@ function App() {
           path="/cart"
           element={user ? <CartPage /> : <Navigate to="/login" />}
         ></Route>
+        <Route
+          path="/purchase-success"
+          element={user ? <PurchaseSuccessPage /> : <Navigate to="/login" />}
+        ></Route>
+        <Route
+          path="/purchase-cancel"
+          element={user ? <PurchaseCancelPage /> : <Navigate to="/login" />}
+        />
       </Routes>
       <Toaster />
     </div>
