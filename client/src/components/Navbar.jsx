@@ -28,9 +28,11 @@ const Navbar = () => {
                   size={20}
                 />
                 <span className="hidden sm:inline">Cart</span>
-                <span className="absolute -top-2 -left-2 bg-emerald-500 text-white rounded-full px-2 py-0.5 text-xs group-hover:bg-emerald-400 transition duration-300 ease-in-out">
-                  {cart.length}
-                </span>
+                {cart.length > 0 && (
+                  <span className="absolute -top-2 -left-2 bg-emerald-500 text-white rounded-full px-2 py-0.5 text-xs group-hover:bg-emerald-400 transition duration-300 ease-in-out">
+                    {cart.length}
+                  </span>
+                )}
               </Link>
             )}
             {isAdmin && (

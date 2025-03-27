@@ -51,5 +51,45 @@ export const useUserStore = create((set, get) => ({
     } catch (error) {
       toast.error(error.response?.data?.message || "An error occurred during logout. Try again later.");
     }
-  }
+  },
+  refreshToken: async () => {
+    if (get().checkingAuth) return;
+    set({checkingAuth: true});
+    try {
+      await axios.get("/api/auth/refresh-token");
+      set({ checkingAuth: false });
+    } catch (error) {
+      set({user: null, checkingAuth: false});
+      throw error;
+    }
+  },
 }));
+
+let refreshPromise = null;
+axios.interceptors.response.use(
+  (response) => response,
+  async (error) => {
+    const originalRequest = error.config;
+    if (error.response?.status === 401 && !originalRequest._retry) {
+      originalRequest._retry = true;
+
+      try {
+        // If a refresh is already in progress, wait for it to complete
+        if (refreshPromise) {
+          await refreshPromise;
+          return axios(originalRequest);
+        }
+        // Start a new refresh process
+        refreshPromise = useUserStore.getState().refreshToken();
+        await refreshPromise;
+        refreshPromise = null;
+        return axios(originalRequest);
+      } catch (refreshError) {
+        // If refresh fails, redirect to login or handle as needed
+        useUserStore.getState().logout();
+        return Promise.reject(refreshError);
+      }
+    }
+    return Promise.reject(error);
+  }
+)

@@ -7,11 +7,10 @@ export const useCartStore = create((set, get) => ({
   coupon: null,
   total: 0,
   subtotal: 0,
-  loading: false,
+  isCouponApplied: false,
   addToCart: async (product) => {
-    set({ loading: true });
     try {
-      await axios.post("/api/cart", { product_id: product._id });
+      await axios.post("/api/cart", { productId: product._id });
       toast.success("Product added to cart");
 
       set((prevState) => {
@@ -29,9 +28,15 @@ export const useCartStore = create((set, get) => ({
       });
       get().calculateTotals();
     } catch (error) {
-      set({ loading: false });
       toast.error(error.response.data.error || "Failed to create cart");
     }
+  },
+  removeFromCart: async (productId) => {
+    await axios.delete("/api/cart", { data: { productId } });
+    set((prevState) => ({
+      cart: prevState.cart.filter((item) => item._id !== productId),
+    }));
+    get().calculateTotals();
   },
   calculateTotals: () => {
     const { cart, coupon } = get();
@@ -49,27 +54,42 @@ export const useCartStore = create((set, get) => ({
     set({ subtotal, total });
   },
   getCartItems: async () => {
-    set({ loading: true });
     try {
       const response = await axios.get("/api/cart");
-      set({ cart: response.data, loading: false });
+      set({ cart: response.data });
       get().calculateTotals();
     } catch (error) {
-      set({ error: "Failed to get cart", loading: false });
       toast.error(error.response.data.error || "Failed to get cart");
     }
   },
   deleteCart: async (id) => {
-    set({ loading: true });
     try {
       await axios.delete(`/api/cart/${id}`);
       set((prevState) => ({
         cart: prevState.cart.filter((cart) => cart._id !== id),
-        loading: false,
       }));
     } catch (error) {
-      set({ loading: false });
       toast.error(error.response.data.error || "Failed to delete cart");
+    }
+  },
+  updateQuantity: async (productId, quantity) => {
+    if (quantity === 0) {
+      get().removeFromCart(productId);
+      return;
+    }
+    try {
+      await axios.put(`/api/cart/${productId}`, { quantity });
+      set((prevState) => ({
+        cart: prevState.cart.map((item) => {
+          if (item._id === productId) {
+            return { ...item, quantity };
+          }
+          return item;
+        }),
+      }));
+      get().calculateTotals();
+    } catch (error) {
+      toast.error(error.response.data.error || "Failed to update quantity");
     }
   },
 }));

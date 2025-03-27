@@ -1,4 +1,6 @@
 import Product from "../models/product.model.js";
+import mongoose from "mongoose";
+
 export const addToCart = async (req, res) => {
   try {
     const { productId } = req.body;
@@ -7,7 +9,7 @@ export const addToCart = async (req, res) => {
     if (existingItem) {
       existingItem.quantity += 1;
     } else {
-      user.cartItems.push({ id: productId, quantity: 1 });
+      user.cartItems.push({ _id: productId, quantity: 1 });
     }
     await user.save();
     res.status(200).json(user.cartItems);
@@ -59,16 +61,25 @@ export const updateQuantity = async (req, res) => {
 
 export const getCartProducts = async (req, res) => {
   try {
-    const products = await Product.find({ _id: { $in: req.user.cartItems } });
-    const cartItems = products.map((product) => {
+    const products = await Promise.all(
+      req.user.cartItems.map(async (item) => {
+        const product = await Product.findOne({ _id: new mongoose.Types.ObjectId(item._id) });
+        return product;
+      })
+    );
+
+    const cartItems = products
+    .filter(product => product !== null) // Filter out null products
+    .map((product) => {
       const item = req.user.cartItems.find(
-        (item) => item.id.toString() === product._id.toString()
+        (item) => item._id.toString() === product._id.toString()
       );
       return {
         ...product.toJSON(),
         quantity: item.quantity,
       };
     });
+    console.log(cartItems);
     return res.status(200).json(cartItems);
   } catch (error) {
     console.log("Error in getCartProducts controller", error.message);
