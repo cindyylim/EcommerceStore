@@ -5,12 +5,14 @@ import { useWishlistStore } from '../stores/useWishlistStore';
 import { useShoppingBagStore } from '../stores/useShoppingBagStore';
 import { toast } from 'react-hot-toast';
 import LoadingSpinner from '../components/LoadingSpinner';
+import SizeSelector from '../components/SizeSelector';
 
 const ProductDetailsPage = () => {
     const { productId } = useParams();
     const [product, setProduct] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [selectedSize, setSelectedSize] = useState(null);
     const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlistStore();
     const { addToShoppingBag } = useShoppingBagStore();
 
@@ -45,8 +47,14 @@ const ProductDetailsPage = () => {
 
     const handleAddToBag = async () => {
         try {
-            await addToShoppingBag(productId);
-            toast.success('Added to shopping bag');
+            console.log(product.hasSizes);
+            if (product.hasSizes && !selectedSize) {
+                toast.error('Please select a size');
+                return;
+            }
+
+            await addToShoppingBag(productId, selectedSize);
+            setSelectedSize(null); // Reset size selection after adding
         } catch (error) {
             toast.error('Failed to add to shopping bag');
         }
@@ -55,6 +63,9 @@ const ProductDetailsPage = () => {
     if (isLoading) return <LoadingSpinner />;
     if (error) return <div className="text-red-500 text-center mt-4">{error}</div>;
     if (!product) return <div className="text-center mt-4">Product not found</div>;
+
+    const availableSizes = product.sizes?.filter(size => size.inStock) || [];
+    const hasAvailableSizes = availableSizes.length > 0;
 
     return (
         <div className="container mx-auto px-4 py-8">
@@ -97,6 +108,17 @@ const ProductDetailsPage = () => {
                     <p className="text-2xl font-semibold text-gray-800">${product.price}</p>
                     <p className="text-gray-600">{product.description}</p>
                     
+                    {/* Size Selection */}
+                    {product.hasSizes && (
+                        <div className="mt-6">
+                            <SizeSelector
+                                sizes={product.sizes}
+                                selectedSize={selectedSize}
+                                onSizeSelect={setSelectedSize}
+                            />
+                        </div>
+                    )}
+
                     {/* Product Features */}
                     {product.features && (
                         <div className="space-y-2">
@@ -112,9 +134,14 @@ const ProductDetailsPage = () => {
                     {/* Add to Bag Button */}
                     <button
                         onClick={handleAddToBag}
-                        className="w-full bg-black text-white py-3 px-6 rounded-lg hover:bg-gray-800 transition-colors"
+                        disabled={product.hasSizes && !hasAvailableSizes}
+                        className={`w-full py-3 px-6 rounded-lg transition-colors ${
+                            product.hasSizes && !hasAvailableSizes
+                                ? 'bg-gray-400 cursor-not-allowed'
+                                : 'bg-black hover:bg-gray-800 text-white'
+                        }`}
                     >
-                        Add to Shopping Bag
+                        {product.hasSizes && !hasAvailableSizes ? 'Out of Stock' : 'Add to Shopping Bag'}
                     </button>
                 </div>
             </div>

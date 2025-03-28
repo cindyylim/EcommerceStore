@@ -50,7 +50,7 @@ export const getFeaturedProducts = async (req, res) => {
 
 export const createProduct = async (req, res) => {
   try {
-    const { name, description, price, image, category, isFeatured } = req.body;
+    const { name, description, price, image, category, isFeatured, sizes, hasSizes } = req.body;
     let cloudinaryResponse = null;
 
     if (image) {
@@ -58,6 +58,12 @@ export const createProduct = async (req, res) => {
         folder: "products",
       });
     }
+
+    // Validate sizes if hasSizes is true
+    if (hasSizes && (!sizes || !Array.isArray(sizes) || sizes.length === 0)) {
+      return res.status(400).json({ message: "Sizes are required for products with sizes" });
+    }
+
     const product = await Product.create({
       name,
       description,
@@ -65,6 +71,8 @@ export const createProduct = async (req, res) => {
       image: cloudinaryResponse?.secure_url ? cloudinaryResponse.secure_url : "",
       category,
       isFeatured,
+      hasSizes,
+      sizes: hasSizes ? sizes : []
     });
     return res.status(201).json(product);
   } catch (error) {
@@ -237,5 +245,36 @@ export const searchProducts = async (req, res) => {
       message: "Error searching products",
       error: error.message 
     });
+  }
+};
+
+export const updateProductSizes = async (req, res) => {
+  try {
+    const { productId } = req.params;
+    const { sizes, hasSizes } = req.body;
+
+    // Validate input
+    if (hasSizes && (!sizes || !Array.isArray(sizes) || sizes.length === 0)) {
+      return res.status(400).json({ message: "Sizes are required for products with sizes" });
+    }
+
+    // Find the product
+    const product = await Product.findById(productId);
+    console.log(product);
+    if (!product) {
+      return res.status(404).json({ message: "Product not found" });
+    }
+
+    // Update the product's size information
+    product.hasSizes = hasSizes;
+    product.sizes = hasSizes ? sizes : [];
+
+    // Save the updated product
+    const updatedProduct = await product.save();
+
+    return res.status(200).json(updatedProduct);
+  } catch (error) {
+    console.log("Error in updateProductSizes controller", error.message);
+    return res.status(500).json({ message: error.message });
   }
 };

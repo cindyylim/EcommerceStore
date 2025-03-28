@@ -31,9 +31,12 @@ export const useShoppingBagStore = create((set, get) => ({
     get().calculateTotals();
     toast.success("Coupon removed");
   },
-  addToShoppingBag: async (productId) => {
+  addToShoppingBag: async (productId, size = null) => {
     try {
-      const response = await axios.post("/api/shoppingBag", { productId });
+      const response = await axios.post("/api/shoppingBag", { 
+        productId,
+        size 
+      });
       set({ shoppingBag: response.data });
       toast.success("Product added to shopping bag");
       get().calculateTotals();
@@ -41,9 +44,11 @@ export const useShoppingBagStore = create((set, get) => ({
       toast.error(error.response?.data?.message || "Failed to add to shopping bag");
     }
   },
-  removeFromShoppingBag: async (productId) => {
+  removeFromShoppingBag: async (productId, size = null) => {
     try {
-      const response = await axios.delete("/api/shoppingBag", { data: { productId } });
+      const response = await axios.delete("/api/shoppingBag", { 
+        data: { productId, size } 
+      });
       set({ shoppingBag: response.data });
       get().calculateTotals();
     } catch (error) {
@@ -83,9 +88,12 @@ export const useShoppingBagStore = create((set, get) => ({
       toast.error("Failed to get shopping bag");
     }
   },
-  updateQuantity: async (productId, quantity) => {
+  updateQuantity: async (productId, quantity, size = null) => {
     try {
-      const response = await axios.put(`/api/shoppingBag/${productId}`, { quantity });
+      const response = await axios.put(`/api/shoppingBag/${productId}`, { 
+        quantity,
+        size 
+      });
       set({ shoppingBag: response.data });
       get().calculateTotals();
     } catch (error) {

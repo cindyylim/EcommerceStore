@@ -81,4 +81,58 @@ export const useProductStore = create((set, get) => ({
       set({ error: "Failed to fetch products", loading: false });
     }
   },
+  updateProductSizes: async (productId, sizes, hasSizes) => {
+    set({ loading: true });
+    try {
+      const response = await axios.patch(`/api/products/${productId}/sizes`, {
+        sizes,
+        hasSizes
+      });
+      
+      set((prevState) => ({
+        products: prevState.products.map((product) => {
+          if (product._id === productId) {
+            return {
+              ...product,
+              sizes: response.data.sizes,
+              hasSizes: response.data.hasSizes
+            };
+          }
+          return product;
+        }),
+        loading: false,
+      }));
+      
+      toast.success("Product sizes updated successfully");
+    } catch (error) {
+      set({ loading: false });
+      toast.error(error.response?.data?.message || "Failed to update product sizes");
+      throw error;
+    }
+  },
+  updateProduct: async (productId, productData) => {
+    set({ loading: true });
+    try {
+      const response = await axios.patch(`/api/products/${productId}`, productData);
+      
+      set((prevState) => ({
+        products: prevState.products.map((product) => {
+          if (product._id === productId) {
+            return {
+              ...product,
+              ...response.data
+            };
+          }
+          return product;
+        }),
+        loading: false,
+      }));
+      
+      toast.success("Product updated successfully");
+    } catch (error) {
+      set({ loading: false });
+      toast.error(error.response?.data?.message || "Failed to update product");
+      throw error;
+    }
+  },
 }));

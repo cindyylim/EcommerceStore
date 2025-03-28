@@ -25,7 +25,7 @@ const ShoppingBagPage = () => {
             ) : (
               <div className="space-y-6">
                 {shoppingBag.map((item) => (
-                  <ShoppingBagItem key={item._id} item={item} />
+                  <ShoppingBagItem key={`${item._id}-${item.selectedSize}`} item={item} />
                 ))}
               </div>
             )}

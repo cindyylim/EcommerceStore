@@ -92,7 +92,6 @@ const OrderSummary = () => {
       console.error("Error: ", result.error);
     }
   };
-
   return (
     <div>
       {/* Order Items Summary */}
@@ -100,18 +99,33 @@ const OrderSummary = () => {
         <h2 className="text-2xl font-semibold mb-4">Order Summary</h2>
         <div className="space-y-4">
           {shoppingBag && shoppingBag.length > 0 ? (
-            shoppingBag.map((item) => (
+            shoppingBag.map((item, index) => (
               <div
-                key={item._id}
+                key={`order-item-${item._id}-${item.selectedSize || 'no-size'}-${index}`}
                 className="flex justify-between items-start border-b pb-4"
               >
                 <div className="flex-1">
                   <h3 className="font-medium">
                     {item.name || "Unnamed Product"}
                   </h3>
+                  {item.selectedSize && (
+                    <p className="text-sm text-gray-600">
+                      Size: {item.selectedSize}
+                    </p>
+                  )}
+                  {item.isAvailable === false && (
+                    <p className="text-sm text-red-600">
+                      {item.errorMessage}
+                    </p>
+                  )}
                   <p className="text-sm text-gray-600">
                     Quantity: {item.quantity || 1}
                   </p>
+                  {item.stockWarning && (
+                    <p className="text-sm text-amber-600">
+                      {item.stockWarning}
+                    </p>
+                  )}
                   <p className="text-sm text-gray-600">
                     ${(item.price || 0).toFixed(2)} each
                   </p>

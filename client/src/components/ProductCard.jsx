@@ -18,7 +18,6 @@ const ProductCard = ({ product }) => {
       return;
     }
     addToShoppingBag(product);
-    toast.success("Added to ShoppingBag");
   };
 
   const handleAddToWishlist = () => {
@@ -29,6 +28,9 @@ const ProductCard = ({ product }) => {
     addToWishlist(product);
     toast.success("Added to Wishlist");
   };
+
+  const availableSizes = product.sizes?.filter(size => size.inStock) || [];
+  const hasAvailableSizes = availableSizes.length > 0;
 
   return (
     <div className="flex relative overflow-hidden rounded-lg border shadow-lg">
@@ -46,12 +48,38 @@ const ProductCard = ({ product }) => {
             <span className="text-xl font-bold">CAD${product.price}</span>
           </p>
         </div>
+        {product.hasSizes && (
+          <div className="mb-4">
+            <p className="text-sm text-gray-600">
+              {hasAvailableSizes 
+                ? `${availableSizes.length} sizes available`
+                : "Out of stock"}
+            </p>
+            <div className="flex flex-wrap gap-1 mt-2">
+              {product.sizes.map((sizeObj) => (
+                <span
+                  key={sizeObj.size}
+                  className={`
+                    px-2 py-1 text-xs rounded
+                    ${sizeObj.inStock 
+                      ? 'bg-green-100 text-green-800' 
+                      : 'bg-red-100 text-red-800'
+                    }
+                  `}
+                >
+                  {sizeObj.size}
+                </span>
+              ))}
+            </div>
+          </div>
+        )}
         <button
-          className="flex items-center justify-center rounded-lg bg-yellow-600 my-5 px-5 py-2.5 text-center text-sm font-medium hover:bg-yellow-700 focus:outline-none focus:ring-4 focus:ring-yellow-300"
+          className="flex items-center justify-center rounded-lg bg-yellow-600 my-5 px-5 py-2.5 text-center text-sm font-medium hover:bg-yellow-700 focus:outline-none focus:ring-4 focus:ring-yellow-300 disabled:opacity-50 disabled:cursor-not-allowed"
           onClick={handleAddToShoppingBag}
+          disabled={product.hasSizes && !hasAvailableSizes}
         >
           <ShoppingCart size={22} className="mr-2" />
-          Add
+          {product.hasSizes && !hasAvailableSizes ? "Out of Stock" : "Add"}
         </button>
         <button
           className="flex items-center justify-center rounded-lg px-5 my-5 py-2.5 text-center text-sm font-medium hover:bg-red-700 focus:outline-none focus:ring-4"
