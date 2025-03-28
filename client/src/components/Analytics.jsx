@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import LoadingSpinner from "./LoadingSpinner";
 import { Users, Package, ShoppingBag, DollarSign } from "lucide-react";
 import { motion } from "framer-motion";
+import axios from "../lib/axios";
 import {
   LineChart,
   Line,
@@ -27,6 +28,7 @@ const Analytics = () => {
     const fetchAnalyticsData = async () => {
       try {
         const res = await axios.get("/api/analytics");
+        console.log(res.data);
         setAnalyticsData(res.data.analyticsData);
         setDailySalesData(res.data.dailySalesData);
       } catch (error) {
