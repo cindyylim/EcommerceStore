@@ -11,7 +11,7 @@ const PurchaseCancelPage = () => {
         transition={{ duration: 0.5 }}
         className="max-w-md w-full rounded-lg shadow-xl overflow-hidden relative z-10"
       >
-        <div className="bg-black p-6 sm:p-8">
+        <div className="bg-gray-200 p-6 sm:p-8">
           <div className="flex justify-center">
             <XCircle className="text-red-500 w-16 h-16 mb-4" />
           </div>
@@ -24,7 +24,7 @@ const PurchaseCancelPage = () => {
           <div className="space-y-4">
             <Link
               to={"/"}
-              className="w-full bg-yellow-700 hover:bg-yellow-600  font-bold py-2 px-4 rounded-lg transition duration-300 flex items-center justify-center"
+              className="w-full bg-white hover:bg-white  font-bold py-2 px-4 rounded-lg transition duration-300 flex items-center justify-center"
             >
               <ArrowLeft className="mr-2" size={18} />
               Return to Shop
