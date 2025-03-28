@@ -52,19 +52,19 @@ const CreateProductForm = () => {
 
   return (
     <motion.div
-      className="bg-gray-800 shadow-lg p-8 mb-8 max-w-xl mx-auto"
+      className="shadow-lg p-8 mb-8 max-w-xl mx-auto"
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.8 }}
     >
-      <h2 className="text-2xl font-semibold mb-6 text-emerald-300">
+      <h2 className="text-2xl font-semibold mb-6">
         Create New Product
       </h2>
       <form className="space-y-4" onSubmit={handleSubmit}>
         <div>
           <label
             htmlFor="name"
-            className="block text-sm font-medium text-gray-300"
+            className="block text-sm font-medium"
           >
             Product Name
           </label>
@@ -76,14 +76,14 @@ const CreateProductForm = () => {
             onChange={(e) =>
               setNewProduct({ ...newProduct, name: e.target.value })
             }
-            className="mt-1 block w-full bg-gray-700 border border-gray-600 rounded-md shadow-sm py-2 px-3 text-white focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+            className="mt-1 block w-full border rounded-md shadow-sm py-2 px-3  focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500"
             required
           />
         </div>
         <div>
           <label
             htmlFor="description"
-            className="block text-sm font-medium text-gray-300"
+            className="block text-sm font-medium"
           >
             Description
           </label>
@@ -96,14 +96,14 @@ const CreateProductForm = () => {
               setNewProduct({ ...newProduct, description: e.target.value })
             }
             rows="3"
-            className="mt-1 block w-full bg-gray-700 border border-gray-600 rounded-md shadow-sm py-2 px-3 text-white focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+            className="mt-1 block w-full rounded-md shadow-sm py-2 px-3  focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500"
             required
           />
         </div>
         <div>
           <label
             htmlFor="price"
-            className="block text-sm font-medium text-gray-300"
+            className="block text-sm font-medium"
           >
             Price
           </label>
@@ -116,14 +116,14 @@ const CreateProductForm = () => {
               setNewProduct({ ...newProduct, price: e.target.value })
             }
             step="0.01"
-            className="mt-1 block w-full bg-gray-700 border border-gray-600 rounded-md shadow-sm py-2 px-3 text-white focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+            className="mt-1 block w-full rounded-md shadow-sm py-2 px-3  focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500"
             required
           />
         </div>
         <div>
           <label
             htmlFor="category"
-            className="block text-sm font-medium text-gray-300"
+            className="block text-sm font-medium"
           >
             Category
           </label>
@@ -134,7 +134,7 @@ const CreateProductForm = () => {
             onChange={(e) =>
               setNewProduct({ ...newProduct, category: e.target.value })
             }
-            className="mt-1 block w-full bg-gray-700 border border-gray-600 rounded-md shadow-sm py-2 px-3 text-white focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+            className="mt-1 block w-full rounded-md shadow-sm py-2 px-3  focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500"
             required
           >
             <option value="">Select a category</option>
@@ -155,18 +155,18 @@ const CreateProductForm = () => {
           />
           <label
             htmlFor="image"
-            className="cursor-pointer bg-gray-700 py-2 px-3 border border-gray-600 rounded-md shadow-sm text-sm leading-4 font-medium text-gray-300 hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset focus:ring-emerald-500"
+            className="cursor-pointer py-2 px-3 border rounded-md shadow-sm text-sm leading-4 font-medium hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset focus:ring-yellow-500"
           >
             <Upload className="h-5 w-5 inline-block mr-2" />
             Upload Image
           </label>
           {newProduct.image && (
-            <span className="ml-3 text-sm text-gray-400">Image uploaded</span>
+            <span className="ml-3 text-sm">Image uploaded</span>
           )}
         </div>
         <button
           type="submit"
-          className="mt-1 flex w-full justify-cemter py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-emerald-600 hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 disabled:opacity-50"
+          className="mt-1 flex w-full justify-cemter py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium  bg-yellow-600 hover:bg-yellow-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500 disabled:opacity-50"
           disabled={loading}
         >
           {loading ? (

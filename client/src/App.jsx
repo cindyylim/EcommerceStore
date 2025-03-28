@@ -2,7 +2,7 @@ import SignupPage from "./pages/SignupPage.jsx";
 import HomePage from "./pages/HomePage.jsx";
 import LoginPage from "./pages/LoginPage.jsx";
 import CategoryPage from "./pages/CategoryPage.jsx";
-import CartPage from "./pages/CartPage.jsx";
+import ShoppingBagPage from "./pages/ShoppingBagPage.jsx";
 import Navbar from "./components/Navbar.jsx";
 import { Routes, Route, Navigate } from "react-router-dom";
 import PurchaseSuccessPage from "./pages/PurchaseSuccessPage.jsx";
@@ -12,12 +12,12 @@ import { useUserStore } from "./stores/useUserStore.js";
 import { useEffect } from "react";
 import LoadingSpinner from "./components/LoadingSpinner.jsx";
 import AdminPage from "./pages/AdminPage.jsx";
-import { useCartStore } from "./stores/useCartStore.js";
+import { useShoppingBagStore } from "./stores/useShoppingBagStore.js";
 import PurchaseCancelPage from "./pages/PurchaseCancelPage.jsx";
 
 function App() {
   const { user, checkAuth, checkingAuth } = useUserStore();
-  const { getCartItems } = useCartStore();
+  const { getShoppingBagItems } = useShoppingBagStore();
 
   useEffect(() => {
     checkAuth();
@@ -25,13 +25,13 @@ function App() {
 
   useEffect(() => {
     if (!user) return;
-    getCartItems();
-  }, [getCartItems, user]);
+    getShoppingBagItems();
+  }, [getShoppingBagItems, user]);
 
   if (checkingAuth) return <LoadingSpinner />;
 
   return (
-    <div className="min-h-screen bg-gray-900 text-white relative overflow-hidden">
+    <div className="min-h-screen relative overflow-hidden">
       <div className="relative pt-20"></div>
       <Navbar />
       <Routes>
@@ -52,8 +52,8 @@ function App() {
         ></Route>
         <Route path="/category/:category" element={<CategoryPage />}></Route>
         <Route
-          path="/cart"
-          element={user ? <CartPage /> : <Navigate to="/login" />}
+          path="/ShoppingBag"
+          element={user ? <ShoppingBagPage /> : <Navigate to="/login" />}
         ></Route>
         <Route
           path="/purchase-success"

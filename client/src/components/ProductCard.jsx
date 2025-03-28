@@ -1,47 +1,46 @@
 import { ShoppingCart } from "lucide-react";
 import { toast } from "react-hot-toast";
 import { useUserStore } from "../stores/useUserStore";
-import { useCartStore } from "../stores/useCartStore";
+import { useShoppingBagStore } from "../stores/useShoppingBagStore";
 
 const ProductCard = ({ product }) => {
   const { user } = useUserStore();
-  const { addToCart } = useCartStore();
+  const { addToShoppingBag } = useShoppingBagStore();
 
-  const handleAddToCart = () => {
+  const handleAddToShoppingBag = () => {
     if (!user) {
-      toast.error("You must be logged in to add to cart", { id: "login" });
+      toast.error("You must be logged in to add to shopping bag", { id: "login" });
       return;
     }
-    addToCart(product);
-    toast.success("Added to cart");
+    addToShoppingBag(product);
+    toast.success("Added to ShoppingBag");
   };
   return (
-    <div className="flex w-full relative flex-col overflow-hidden rounded-lg border border-gray-700 shadow-lg">
-      <div className="relative mx-3 mt-3 flex h-60 overflow-hidden rounded-xl">
+    <div className="flex relative overflow-hidden rounded-lg border shadow-lg">
+      <div className="relative mx-3 mt-3 flex overflow-hidden rounded-xl">
         <img
           className="object-cover w-full"
           src={product.image}
           alt="product image"
         />
-        <div className="absolute inset-0 bg-black bg-opacity-20" />
       </div>
       <div className="mt-4 px-5 pb-5">
-        <h5 className="text-xl font-semibold tracking-tight text-white">
+        <h5 className="text-xl font-semibold tracking-tight">
           {product.name}
         </h5>
         <div className="mt-2 mb-5 flex items-center justify-between">
           <p>
-            <span className="text-3xl font-bold text-emerald-400">
+            <span className="text-xl font-bold">
               CAD${product.price}
             </span>
           </p>
         </div>
         <button
-          className="flex ites-center justify-center rounded-lg bg-emerald-600 px-5 py-2.5 text-center text-sm font-medium text-white hover:bg-emerald-700 focus:outline-none focus:ring-4 focus:ring-emerald-300"
-          onClick={handleAddToCart}
+          className="flex items-center justify-center rounded-lg bg-yellow-600 px-5 py-2.5 text-center text-sm font-medium hover:bg-yellow-700 focus:outline-none focus:ring-4 focus:ring-yellow-300"
+          onClick={handleAddToShoppingBag}
         >
           <ShoppingCart size={22} className="mr-2" />
-          Add to cart
+          Add
         </button>
       </div>
     </div>

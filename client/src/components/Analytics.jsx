@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import LoadingSpinner from "./LoadingSpinner";
-import { Users, Package, ShoppingCart, DollarSign } from "lucide-react";
+import { Users, Package, ShoppingBag, DollarSign } from "lucide-react";
 import { motion } from "framer-motion";
 import {
   LineChart,
@@ -48,29 +48,29 @@ const Analytics = () => {
           title="Total Users"
           value={analyticsData.users.toLocaleString()}
           icon={Users}
-          color="from-emerald-500 to-teal-700"
+          color="from-yellow-400 to-teal-700"
         />
         <AnalyticsCard
           title="Total Products"
           value={analyticsData.products.toLocaleString()}
           icon={Package}
-          color="from-emerald-500 to-green-700"
+          color="from-yellow-400 to-green-700"
         />
         <AnalyticsCard
           title="Total Sales"
           value={analyticsData.totalSales.toLocaleString()}
-          icon={ShoppingCart}
-          color="from-emerald-500 to-cyan-700"
+          icon={ShoppingBag}
+          color="from-yellow-400 to-cyan-700"
         />
         <AnalyticsCard
           title="Total Revenue"
           value={`$${analyticsData.totalRevenue.toLocaleString()}`}
           icon={DollarSign}
-          color="from-emerald-500 to-lime-700"
+          color="from-yellow-400 to-lime-700"
         />
       </div>
       <motion.div
-        className="bg-gray-800/60 rounded-lg p-6 shadow-lg"
+        className="rounded-lg p-6 shadow-lg"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, delay: 0.25 }}
@@ -110,18 +110,18 @@ export default Analytics;
 
 const AnalyticsCard = ({ title, value, icon: Icon, color }) => (
   <motion.div
-    className={`bg-gray-800 rounded-lg p-6 shadow-lg overflow-hidden relative ${color}`}
+    className={`rounded-lg p-6 shadow-lg overflow-hidden relative ${color}`}
     initial={{ opacity: 0, y: 20 }}
     animate={{ opacity: 1, y: 0 }}
     transition={{ duration: 0.5 }}
   >
     <div className="flex justify-between items-center">
       <div className="z-10">
-        <p className="text-emerald-300 text-sm mb-1 font-semibold">{title}</p>
-        <h3 className="text-white text-3xl font-bold">{value}</h3>
+        <p className="text-sm mb-1 font-semibold">{title}</p>
+        <h3 className="text-3xl font-bold">{value}</h3>
       </div>
-      <div className="absolute inset-0 bg-gradient-to-br from-emerald-600 to-emerald-900 opacity-30" />
-      <div className="absolute -bottom-4 -right-4 text-emerald-800 opacity-50" />
+      <div className="absolute inset-0 bg-gradient-to-br from-yellow-600 to-yellow-900 opacity-30" />
+      <div className="absolute -bottom-4 -right-4 text-yellow-800 opacity-50" />
       <Icon className="h-32 w-32"></Icon>
     </div>
   </motion.div>

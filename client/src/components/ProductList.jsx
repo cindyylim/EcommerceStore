@@ -6,13 +6,13 @@ const ProductList = () => {
   const { deleteProduct, toggleFeaturedProduct, products } = useProductStore();
   return (
     <motion.div
-      className="bg-gray-800 shadow-lg rounded-lg overflow-hidden max-w-4xl mx-auto"
+      className="shadow-lg rounded-lg overflow-hidden max-w-4xl mx-auto"
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.8 }}
     >
-      <table className="min-w-full divide-y divide-gray-700">
-        <thead className="bg-gray-700">
+      <table className="min-w-full divide-y">
+        <thead>
           <tr>
             <th
               scope="col"
@@ -46,9 +46,9 @@ const ProductList = () => {
             </th>
           </tr>
         </thead>
-        <tbody className="bg-gray-800 divide-y divide-gray-700">
+        <tbody className="divide-y">
           {products?.map((product) => (
-            <tr key={product._id} className="hover:bg-gray-700">
+            <tr key={product._id}>
               <td className="px-6 py-4 whitespace-nowrap">
                 <div className="flex items-center">
                   <div className="flex-shrink-0 h-10 w-10">
@@ -59,19 +59,19 @@ const ProductList = () => {
                     />
                   </div>
                   <div className="ml-4">
-                    <div className="text-sm font-medium text-white">
+                    <div className="text-sm font-medium ">
                       {product.name}
                     </div>
                   </div>
                 </div>
               </td>
               <td className="px-6 py-4 whitespace-nowrap">
-                <div className="text-sm text-gray-300">
+                <div className="text-sm">
                   CAD${product.price.toFixed(2)}
                 </div>
               </td>
               <td className="px-6 py-4 whitespace-nowrap">
-                <div className="text-sm text-gray-300">{product.category}</div>
+                <div className="text-sm">{product.category}</div>
               </td>
               <td className="px-6 py-4 whitespace-nowrap">
                 <button
