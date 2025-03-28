@@ -4,7 +4,25 @@ import cloudinary from "../lib/cloudinary.js";
 
 export const getAllProducts = async (req, res) => {
   try {
-    const products = await Product.find();
+    const { sort } = req.query;
+    let query = Product.find();
+    
+    // Apply sorting based on the sort parameter
+    switch (sort) {
+      case 'featured':
+        query = query.sort({ isFeatured: -1, name: 1 });
+        break;
+      case 'price-asc':
+        query = query.sort({ price: 1 });
+        break;
+      case 'price-desc':
+        query = query.sort({ price: -1 });
+        break;
+      default:
+        query = query.sort({ createdAt: -1 }); // Default sort by newest
+    }
+
+    const products = await query;
     return res.status(200).json({ products });
   } catch (error) {
     console.log("Error in getAllProducts controller", error.message);
@@ -104,8 +122,27 @@ export const getRecommendedProducts = async (req, res) => {
 
 export const getProductsByCategory = async (req, res) => {
   const { category } = req.params;
+  const { sort } = req.query;
+  
   try {
-    const products = await Product.find({ category });
+    let query = Product.find({ category });
+    
+    // Apply sorting based on the sort parameter
+    switch (sort) {
+      case 'featured':
+        query = query.sort({ isFeatured: -1, name: 1 });
+        break;
+      case 'price-asc':
+        query = query.sort({ price: 1 });
+        break;
+      case 'price-desc':
+        query = query.sort({ price: -1 });
+        break;
+      default:
+        query = query.sort({ createdAt: -1 }); // Default sort by newest
+    }
+
+    const products = await query;
     return res.status(200).json({ products });
   } catch (error) {
     console.log("Error in getProductsByCategory controller", error.message);
@@ -153,18 +190,17 @@ export const getProductById = async (req, res) => {
 
 export const searchProducts = async (req, res) => {
   try {
-    const { q } = req.query;
+    const { q, sort } = req.query;
     
     if (!q) {
       return res.status(400).json({ message: "Search query is required" });
     }
 
     console.log("Search query:", q);
-
     const searchRegex = new RegExp(q, 'i');
     console.log("Search regex:", searchRegex);
 
-    const products = await Product.find({
+    let query = Product.find({
       $or: [
         { name: searchRegex },
         { description: searchRegex },
@@ -172,6 +208,22 @@ export const searchProducts = async (req, res) => {
       ]
     });
 
+    // Apply sorting based on the sort parameter
+    switch (sort) {
+      case 'featured':
+        query = query.sort({ isFeatured: -1, name: 1 });
+        break;
+      case 'price-asc':
+        query = query.sort({ price: 1 });
+        break;
+      case 'price-desc':
+        query = query.sort({ price: -1 });
+        break;
+      default:
+        query = query.sort({ createdAt: -1 }); // Default sort by newest
+    }
+
+    const products = await query;
     console.log("Found products:", products.length);
 
     return res.status(200).json(products);

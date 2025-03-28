@@ -61,10 +61,10 @@ export const useProductStore = create((set, get) => ({
       toast.error(error.response.data.error || "Failed to update product");
     }
   },
-  fetchProductsByCategory: async (category) => {
+  fetchProductsByCategory: async (category, sort = 'newest') => {
     set({ loading: true });
     try {
-      const response = await axios.get(`/api/products/category/${category}`);
+      const response = await axios.get(`/api/products/category/${category}?sort=${sort}`);
       set({ products: response.data.products, loading: false });
     } catch (error) {
       set({ error: "Failed to get products", loading: false });
