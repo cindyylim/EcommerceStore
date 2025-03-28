@@ -1,12 +1,34 @@
-import React from "react";
-import { ShoppingCart, UserPlus, LogIn, LogOut, Lock } from "lucide-react";
+import React, { useState } from "react";
+import {
+  ShoppingCart,
+  UserPlus,
+  LogIn,
+  LogOut,
+  Lock,
+  MapPin,
+  CircleDollarSign,
+  Languages,
+} from "lucide-react";
 import { Link } from "react-router-dom";
 import { useUserStore } from "../stores/useUserStore";
 import { useShoppingBagStore } from "../stores/useShoppingBagStore";
+import { CIcon } from "@coreui/icons-react";
+import { cifCa } from "@coreui/icons";
+import Modal from "./Modal.jsx";
+
 const Navbar = () => {
   const { user, logout } = useUserStore();
   const isAdmin = user?.role === "admin";
   const { ShoppingBag } = useShoppingBagStore();
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const handleRegionalPreferences = () => {
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+  };
   return (
     <header className="fixed top-0 left-0 w-full bg-opacity-90 backdrop-blur-md shadow-lg z-40 transition-all duration-300 border-b">
       <div className="container mx-auto px-4 py-3">
@@ -21,6 +43,9 @@ const Navbar = () => {
             <Link to={"/"} className="flex items-center">
               HOME
             </Link>
+            <button onClick={handleRegionalPreferences}>
+              <CIcon icon={cifCa} className="inline-block mr-1 w-6 h-6" />
+            </button>
             {user && (
               <Link to={"/ShoppingBag"} className="relative group">
                 <ShoppingCart
@@ -73,6 +98,28 @@ const Navbar = () => {
           </nav>
         </div>
       </div>
+      <Modal isOpen={isModalOpen} onClose={closeModal}>
+        <h2 className="text-xl font-bold mb-4">Regional Preferences</h2>
+        <p className="py-3">How would you like to shop?</p>
+        <hr className="my-1 border-gray-300" />
+        <div className="py-3 flex items-end justify-items-end gap-6">
+          <MapPin />
+          <p>Ship to</p>
+          <p className="text-gray-600 underline">Canada</p>
+        </div>
+        <hr className="my-1 border-gray-300" />
+        <div className="py-3 flex items-end justify-items-end gap-6">
+          <CircleDollarSign />
+          <p>Currency</p>
+          <p className="text-gray-600">Canadian Dollar(CAD)</p>
+        </div>
+        <hr className="my-1 border-gray-300" />
+        <div className="py-3 flex items-end justify-items-end gap-6">
+          <Languages />
+          <p>Language</p>
+          <p className="text-gray-600">English</p>
+        </div>
+      </Modal>
     </header>
   );
 };

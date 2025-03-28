@@ -10,6 +10,8 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@coreui/icons": "^3.0.1",
+    "@coreui/icons-react": "^2.3.0",
     "@stripe/stripe-js": "4.8.0",
     "axios": "^1.8.4",
     "framer-motion": "^12.5.0",
