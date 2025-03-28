@@ -87,7 +87,7 @@ A modern e-commerce platform built with React and Node.js, featuring a responsiv
 
    # Start the frontend application
    cd client
-   npm start
+   npm run dev
    ```
 
 ## API Endpoints
