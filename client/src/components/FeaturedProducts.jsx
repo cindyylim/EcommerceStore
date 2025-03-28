@@ -91,7 +91,7 @@ const FeaturedProducts = ({ featuredProducts }) => {
             onClick={prevSlide}
             disabled={isStartDisabled}
             className={`absolute top-1/2 -left-4 transform -translate-y-1/2 p-2 rounded-full transition-colors duration-300 ${
-              isStartDisabled ? null : "bg-black hover:bg-gray-200"
+              isStartDisabled ? null : "bg-white hover:bg-gray-200"
             }`}
           >
             <ChevronLeft className="w-6 h-6" />
@@ -100,7 +100,7 @@ const FeaturedProducts = ({ featuredProducts }) => {
             onClick={nextSlide}
             disabled={isEndDisabled}
             className={`absolute top-1/2 -right-4 transform -translate-y-1/2 p-2 rounded-full transition-colors duration-300 ${
-              isEndDisabled ? null : "bg-black hover:bg-gray-200"
+              isEndDisabled ? null : "bg-white hover:bg-gray-200"
             }`}
           >
             <ChevronRight className="w-6 h-6" />
