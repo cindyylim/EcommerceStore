@@ -3,6 +3,7 @@ import { toast } from "react-hot-toast";
 import { useUserStore } from "../stores/useUserStore";
 import { useShoppingBagStore } from "../stores/useShoppingBagStore";
 import { useWishlistStore } from "../stores/useWishlistStore";
+import { Link } from "react-router-dom";
 
 const ProductCard = ({ product }) => {
   const { user } = useUserStore();
@@ -11,7 +12,9 @@ const ProductCard = ({ product }) => {
 
   const handleAddToShoppingBag = () => {
     if (!user) {
-      toast.error("You must be logged in to add to shopping bag", { id: "login" });
+      toast.error("You must be logged in to add to shopping bag", {
+        id: "login",
+      });
       return;
     }
     addToShoppingBag(product);
@@ -25,7 +28,7 @@ const ProductCard = ({ product }) => {
     }
     addToWishlist(product);
     toast.success("Added to Wishlist");
-  }
+  };
 
   return (
     <div className="flex relative overflow-hidden rounded-lg border shadow-lg">
@@ -37,14 +40,10 @@ const ProductCard = ({ product }) => {
         />
       </div>
       <div className="mt-4 px-5 pb-5">
-        <h5 className="text-xl font-semibold tracking-tight">
-          {product.name}
-        </h5>
+        <h5 className="text-xl font-semibold tracking-tight">{product.name}</h5>
         <div className="mt-2 mb-5 flex items-center justify-between">
           <p>
-            <span className="text-xl font-bold">
-              CAD${product.price}
-            </span>
+            <span className="text-xl font-bold">CAD${product.price}</span>
           </p>
         </div>
         <button
@@ -61,6 +60,12 @@ const ProductCard = ({ product }) => {
           <Heart size={22} className="mr-2" />
           Add
         </button>
+        <Link
+          to={`/product/${product._id}`}
+          className="mt-2 inline-block text-blue-600 hover:text-blue-800"
+        >
+          View Details
+        </Link>
       </div>
     </div>
   );

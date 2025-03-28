@@ -16,6 +16,7 @@ import { useShoppingBagStore } from "./stores/useShoppingBagStore.js";
 import PurchaseCancelPage from "./pages/PurchaseCancelPage.jsx";
 import WishlistPage from "./pages/WishlistPage.jsx";
 import ProductDetailsPage from "./pages/ProductDetailsPage.jsx";
+import SearchPage from "./pages/SearchPage.jsx";
 
 function App() {
   const { user, checkAuth, checkingAuth } = useUserStore();
@@ -70,6 +71,7 @@ function App() {
           element={user ? <WishlistPage /> : <Navigate to="/login" />}
         />
         <Route path="/product/:productId" element={<ProductDetailsPage />} />
+        <Route path="/search" element={<SearchPage />} />
       </Routes>
       <Toaster />
     </div>

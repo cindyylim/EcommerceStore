@@ -1,6 +1,7 @@
 import React from "react";
 import { Minus, Plus, Trash } from "lucide-react";
 import { useShoppingBagStore } from "../stores/useShoppingBagStore";
+import { Link } from "react-router-dom";
 
 const ShoppingBagItem = ({ item }) => {
   const { removeFromShoppingBag, updateQuantity } = useShoppingBagStore();
@@ -16,14 +17,14 @@ const ShoppingBagItem = ({ item }) => {
             onClick={() => updateQuantity(item._id, item.quantity - 1)}
             className="inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-md border hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-yellow-500"
           >
-            <Minus/>
+            <Minus />
           </button>
           <p className="px-4">{item.quantity}</p>
           <button
             onClick={() => updateQuantity(item._id, item.quantity + 1)}
             className="inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-md border hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-yellow-500"
           >
-            <Plus/>
+            <Plus />
           </button>
         </div>
         <div className="text-end md:order-4 md:w-32">
@@ -31,10 +32,14 @@ const ShoppingBagItem = ({ item }) => {
         </div>
       </div>
       <div className="w-full min-w-0 flex-1 space-y-4 md:order-2 md:max-w-md">
-        <p className="text-base font-medium  hover:text-yellow-400 hover:underline">
-          {item.name}
-        </p>
+        <p className="text-base font-medium">{item.name}</p>
         <p className="text-sm">{item.description}</p>
+        <Link
+          to={`/product/${item._id}`}
+          className="mb-2 inline-block text-blue-600 hover:text-blue-800"
+        >
+          View Details
+        </Link>
         <div className="flex items-center gap-4">
           <button
             onClick={() => removeFromShoppingBag(item._id)}

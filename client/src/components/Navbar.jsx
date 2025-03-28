@@ -16,6 +16,7 @@ import { useShoppingBagStore } from "../stores/useShoppingBagStore";
 import { CIcon } from "@coreui/icons-react";
 import { cifCa } from "@coreui/icons";
 import Modal from "./Modal.jsx";
+import SearchBar from "./SearchBar.jsx";
 
 const Navbar = () => {
   const { user, logout } = useUserStore();
@@ -40,6 +41,9 @@ const Navbar = () => {
           >
             E-COMMERCE
           </Link>
+          <div className="flex-1 max-w-xl mx-4">
+            <SearchBar />
+          </div>
           <nav className="flex flex-wrap items-center gap-4">
             <Link to={"/"} className="flex items-center">
               HOME

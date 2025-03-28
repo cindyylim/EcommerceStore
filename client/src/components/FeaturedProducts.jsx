@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
-import { ChevronLeft, ChevronRight, ShoppingCart} from "lucide-react";
+import { ChevronLeft, ChevronRight, ShoppingCart } from "lucide-react";
 import { useShoppingBagStore } from "../stores/useShoppingBagStore";
+import { Link } from "react-router-dom";
 
 const FeaturedProducts = ({ featuredProducts }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -67,6 +68,12 @@ const FeaturedProducts = ({ featuredProducts }) => {
                         <p className="font-medium mb-4">
                           CAD${product.price.toFixed(2)}
                         </p>
+                        <Link
+                          to={`/product/${product._id}`}
+                          className="mb-2 inline-block text-blue-600 hover:text-blue-800"
+                        >
+                          View Details
+                        </Link>
                         <button
                           onClick={() => addToShoppingBag(product)}
                           className="w-full bg-yellow-600 hover:bg-yellow-500  font-semibold py-2 px-4 rounded transition-colors duration-300 flex items-center justify-center"
@@ -84,9 +91,7 @@ const FeaturedProducts = ({ featuredProducts }) => {
             onClick={prevSlide}
             disabled={isStartDisabled}
             className={`absolute top-1/2 -left-4 transform -translate-y-1/2 p-2 rounded-full transition-colors duration-300 ${
-              isStartDisabled
-                ? null
-                :  "bg-black hover:bg-gray-200"
+              isStartDisabled ? null : "bg-black hover:bg-gray-200"
             }`}
           >
             <ChevronLeft className="w-6 h-6" />
@@ -95,9 +100,7 @@ const FeaturedProducts = ({ featuredProducts }) => {
             onClick={nextSlide}
             disabled={isEndDisabled}
             className={`absolute top-1/2 -right-4 transform -translate-y-1/2 p-2 rounded-full transition-colors duration-300 ${
-              isEndDisabled
-                ? null
-                : "bg-black hover:bg-gray-200"
+              isEndDisabled ? null : "bg-black hover:bg-gray-200"
             }`}
           >
             <ChevronRight className="w-6 h-6" />

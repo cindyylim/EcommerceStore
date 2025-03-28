@@ -150,3 +150,40 @@ export const getProductById = async (req, res) => {
       res.status(500).json({ message: 'Error fetching product details' });
   }
 }
+
+export const searchProducts = async (req, res) => {
+  try {
+    const { q } = req.query;
+    
+    if (!q) {
+      return res.status(400).json({ message: "Search query is required" });
+    }
+
+    console.log("Search query:", q);
+
+    const searchRegex = new RegExp(q, 'i');
+    console.log("Search regex:", searchRegex);
+
+    const products = await Product.find({
+      $or: [
+        { name: searchRegex },
+        { description: searchRegex },
+        { category: searchRegex }
+      ]
+    });
+
+    console.log("Found products:", products.length);
+
+    return res.status(200).json(products);
+  } catch (error) {
+    console.error("Detailed search error:", {
+      message: error.message,
+      stack: error.stack,
+      query: req.query
+    });
+    return res.status(500).json({ 
+      message: "Error searching products",
+      error: error.message 
+    });
+  }
+};
