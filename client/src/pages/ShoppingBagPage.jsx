@@ -7,9 +7,8 @@ import { ShoppingCart } from "lucide-react";
 import { Link } from "react-router-dom";
 import OrderSummary from "../components/OrderSummary";
 import GiftCouponCard from "../components/GiftCouponCard";
-
 const ShoppingBagPage = () => {
-  const { ShoppingBag } = useShoppingBagStore();
+  const { shoppingBag } = useShoppingBagStore();
   return (
     <div className="py-8 md:py-16">
       <div className="mx-auto max-w-screen-3xl px-4 2xl:px-0">
@@ -21,25 +20,25 @@ const ShoppingBagPage = () => {
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.5, delay: 0.2 }}
           >
-            {ShoppingBag.length === 0 ? (
+            {shoppingBag.length === 0 ? (
               <EmptyShoppingBagUI />
             ) : (
               <div className="space-y-6">
-                {ShoppingBag.map((item) => (
+                {shoppingBag.map((item) => (
                   <ShoppingBagItem key={item._id} item={item} />
                 ))}
               </div>
             )}
-            {ShoppingBag.length > 0 && <YouMightLike />}
+            {shoppingBag.length > 0 && <YouMightLike />}
           </motion.div>
-          {ShoppingBag.length > 0 && (
+          {shoppingBag.length > 0 && (
             <motion.div
               className="mx-auto mt-6 flex-1 space-y-6 lg:mt-0"
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.5, delay: 0.4 }}
             >
-              <div className="hidden lg:block lg:w-96 lg:space-y-6">
+              <div className="lg:block lg:w-96 lg:space-y-6">
                 <OrderSummary />
                 <GiftCouponCard />
               </div>

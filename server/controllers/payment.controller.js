@@ -8,7 +8,7 @@ dotenv.config();
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 export const createCheckoutSession = async (req, res) => {
   try {
-    const { products, couponCode } = req.body;
+    const { products, couponCode, name, email, phone, address } = req.body;
     if (!Array.isArray(products) || products.length === 0) {
       return res
         .status(400)
@@ -62,6 +62,10 @@ export const createCheckoutSession = async (req, res) => {
             price: p.price,
           }))
         ),
+        name: name,
+        email: email,
+        phone: phone,
+        address: address,
       },
     });
     if (totalAmount >= 20000) {
@@ -119,6 +123,10 @@ export const checkoutSuccess = async (req, res) => {
       })),
       totalAmount: session.amount_total / 100,
       stripeSessionId: sessionId,
+      name: session.metadata.name,
+      email: session.metadata.email,
+      phone: session.metadata.phone,
+      address: session.metadata.address,
     });
     await newOrder.save();
     return res.status(200).json({

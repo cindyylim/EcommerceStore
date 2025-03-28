@@ -14,6 +14,8 @@ import LoadingSpinner from "./components/LoadingSpinner.jsx";
 import AdminPage from "./pages/AdminPage.jsx";
 import { useShoppingBagStore } from "./stores/useShoppingBagStore.js";
 import PurchaseCancelPage from "./pages/PurchaseCancelPage.jsx";
+import WishlistPage from "./pages/WishlistPage.jsx";
+import ProductDetailsPage from "./pages/ProductDetailsPage.jsx";
 
 function App() {
   const { user, checkAuth, checkingAuth } = useUserStore();
@@ -63,6 +65,11 @@ function App() {
           path="/purchase-cancel"
           element={user ? <PurchaseCancelPage /> : <Navigate to="/login" />}
         />
+        <Route
+          path="/wishlist"
+          element={user ? <WishlistPage /> : <Navigate to="/login" />}
+        />
+        <Route path="/product/:productId" element={<ProductDetailsPage />} />
       </Routes>
       <Toaster />
     </div>

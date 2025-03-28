@@ -8,6 +8,7 @@ import {
   MapPin,
   CircleDollarSign,
   Languages,
+  Heart,
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useUserStore } from "../stores/useUserStore";
@@ -19,7 +20,7 @@ import Modal from "./Modal.jsx";
 const Navbar = () => {
   const { user, logout } = useUserStore();
   const isAdmin = user?.role === "admin";
-  const { ShoppingBag } = useShoppingBagStore();
+  const { shoppingBag } = useShoppingBagStore();
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const handleRegionalPreferences = () => {
@@ -53,9 +54,9 @@ const Navbar = () => {
                   size={20}
                 />
                 <span className="hidden sm:inline">SHOPPING BAG</span>
-                {ShoppingBag.length > 0 && (
+                {shoppingBag.length > 0 && (
                   <span className="absolute -top-2 -left-2 bg-yellow-500  rounded-full px-2 py-0.5 text-xs group-hover:bg-yellow-400 transition duration-300 ease-in-out">
-                    {ShoppingBag.length}
+                    {shoppingBag.length}
                   </span>
                 )}
               </Link>
@@ -69,6 +70,7 @@ const Navbar = () => {
                 <span className="hidden sm:inline">DASHBOARD</span>
               </Link>
             )}
+            {user ? (<Link to={"/wishlist"}><Heart size={18}/></Link>) : null}
             {user ? (
               <button
                 className="py-2 px-4 rounded-md flex items-center transition duration-300 ease-in-out"

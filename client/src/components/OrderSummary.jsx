@@ -1,94 +1,332 @@
-import React from "react";
-import { motion } from "framer-motion";
+import React, { useState, useEffect } from "react";
 import { useShoppingBagStore } from "../stores/useShoppingBagStore";
-import { Link } from "react-router-dom";
-import { MoveRight } from "lucide-react";
 import { loadStripe } from "@stripe/stripe-js";
 import axios from "../lib/axios";
 
-const stripePromise = loadStripe("pk_test_51R5VjHIm1NY2Sep6AZLPbAzXDMLaoNbENv7RXWQjDh8XeKFW5yxdX1y0qLWunTamRiqhoS05537tIiEJSoWfNhu600CChUjzSU");
+const stripePromise = loadStripe(
+  "pk_test_51R5VjHIm1NY2Sep6AZLPbAzXDMLaoNbENv7RXWQjDh8XeKFW5yxdX1y0qLWunTamRiqhoS05537tIiEJSoWfNhu600CChUjzSU"
+);
 
 const OrderSummary = () => {
-  const { total, subtotal, coupon, isCouponApplied, ShoppingBag } = useShoppingBagStore();
+  const { total, subtotal, coupon, isCouponApplied, shoppingBag } =
+    useShoppingBagStore();
+  const [selectedShipping, setSelectedShipping] = useState("standard");
   const savings = subtotal - total;
   const formattedSubtotal = subtotal.toFixed(2);
   const formattedTotal = total.toFixed(2);
   const formattedSavings = savings.toFixed(2);
+  const [shippingAddress, setNewShippingAddress] = useState({
+    firstName: "",
+    lastName: "",
+    address: "",
+    city: "",
+    province: "",
+    postalCode: "",
+    email: "",
+    phone: "",
+  });
 
-  const handlePayment = async () => {
+  // Calculate shipping cost
+  const shippingCost = selectedShipping === "standard" ? 15 : 20;
+
+  // Calculate final total with shipping
+  const finalTotal = Number(total) + shippingCost;
+
+  const handleShippingChange = (event) => {
+    setSelectedShipping(event.target.value);
+  };
+
+  const handlePayment = async (e) => {
+    if (!shippingAddress.firstName) {
+      e.preventDefault();
+      alert("First name is required");
+      return;
+    } else if (!shippingAddress.lastName) {
+      e.preventDefault();
+      alert("Last name is required");
+      return;
+    } else if (!shippingAddress.address) {
+      e.preventDefault();
+      alert("Address is required");
+      return;
+    } else if (!shippingAddress.city) {
+      e.preventDefault();
+      alert("City is required");
+      return;
+    } else if (!shippingAddress.province) {
+      e.preventDefault();
+      alert("Province is required");
+      return;
+    } else if (!shippingAddress.postalCode) {
+      e.preventDefault();
+      alert("Postal code is required");
+      return;
+    } else if (!shippingAddress.email) {
+      e.preventDefault();
+      alert("Email is required");
+      return;
+    } else if (!shippingAddress.phone) {
+      e.preventDefault();
+      alert("Phone number is required");
+      return;
+    }
     const stripe = await stripePromise;
     const res = await axios.post("/api/payments/create-checkout-session", {
-      products: ShoppingBag,
+      products: shoppingBag,
       coupon: coupon ? coupon.code : null,
+      name: shippingAddress.firstName + " " + shippingAddress.lastName,
+      email: shippingAddress.email,
+      phone: shippingAddress.phone,
+      address:
+        shippingAddress.address +
+        ", " +
+        shippingAddress.city +
+        ", " +
+        shippingAddress.province +
+        ", " +
+        shippingAddress.postalCode,
     });
     const session = res.data;
-    const result = await stripe.redirectToCheckout({sessionId: session.id});
+    const result = await stripe.redirectToCheckout({ sessionId: session.id });
     if (result.error) {
-        console.error("Error: ", result.error);
+      console.error("Error: ", result.error);
     }
   };
+
   return (
-    <motion.div
-      className="space-y-4 rounded-lg border p-4 shadow-sm sm:p-6"
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5 }}
-    >
-      <p className="text-xl font-semibold">Order summary</p>
-      <div className="space-y-4">
-        <div className="space-y-2">
-          <dl className="flex items-center justify-between gap-4">
-            <dt className="text-base font-normal">
-              Original price
-            </dt>
-            <dd className=" text-base font-medium">
-              CAD${formattedSubtotal}
-            </dd>
-          </dl>
-          {savings > 0 && (
-            <dl className="flex items-center justify-between gap-4">
-              <dt className="text-base font-normal">You saved</dt>
-              <dd className="text-base font-medium">
-                CAD${formattedSavings}
-              </dd>
-            </dl>
+    <div>
+      {/* Order Items Summary */}
+      <div className="mb-6">
+        <h2 className="text-2xl font-semibold mb-4">Order Summary</h2>
+        <div className="space-y-4">
+          {shoppingBag && shoppingBag.length > 0 ? (
+            shoppingBag.map((item) => (
+              <div
+                key={item._id}
+                className="flex justify-between items-start border-b pb-4"
+              >
+                <div className="flex-1">
+                  <h3 className="font-medium">
+                    {item.name || "Unnamed Product"}
+                  </h3>
+                  <p className="text-sm text-gray-600">
+                    Quantity: {item.quantity || 1}
+                  </p>
+                  <p className="text-sm text-gray-600">
+                    ${(item.price || 0).toFixed(2)} each
+                  </p>
+                </div>
+                <div className="text-right">
+                  <p className="font-medium">
+                    ${((item.price || 0) * (item.quantity || 1)).toFixed(2)}
+                  </p>
+                </div>
+              </div>
+            ))
+          ) : (
+            <p className="text-gray-500 text-center py-4">
+              No items in your shopping bag
+            </p>
           )}
-          {coupon && isCouponApplied && (
-            <dl className="flex items-center justify-between gap-4">
-              <dt className="text-base font-normal">
-                Coupon ({coupon.code})
-              </dt>
-              <dd className="text-base font-medium">
-                -{coupon.discountPercentage}%
-              </dd>
-            </dl>
-          )}
-          <dl className="flex items-center justify-between gap-4 border-t pt-2">
-            <dt className=" text-base font-bold">Total</dt>
-            <dd className="text-base font-bold">
-              CAD${formattedTotal}
-            </dd>
-          </dl>
-        </div>
-        <motion.button
-          className="flex w-full items-center justify-center rounded-lg bg-yellow-600 px-5 py-2.5 text-sm font-medium  hover:bg-yellow-700 focus:outline-none focus:ring-4 focus:ring-yellow-300"
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-          onClick={handlePayment}
-        >
-          Proceed to checkout
-        </motion.button>
-        <div className="flex items-center justify-center gap-2">
-          <span className="text-sm font-normal">or</span>
-          <Link
-            to="/"
-            className="inline-flex items-center gap-2 text-sm font-medium underline hover:text-gray-800 hover:no-underline"
-          >
-            Continue Shopping <MoveRight size={16} />
-          </Link>
         </div>
       </div>
-    </motion.div>
+
+      {/* Subtotal and Discounts */}
+      <div className="mb-6">
+        <div className="flex justify-between mb-2">
+          <span>Subtotal</span>
+          <span>${formattedSubtotal}</span>
+        </div>
+        {isCouponApplied && (
+          <div className="flex justify-between mb-2 text-green-600">
+            <span>Discount</span>
+            <span>-${formattedSavings}</span>
+          </div>
+        )}
+        <div className="flex justify-between mb-2">
+          <span>Shipping</span>
+          <span>${shippingCost.toFixed(2)}</span>
+        </div>
+        <div className="border-t pt-2 mt-2">
+          <div className="flex justify-between font-semibold">
+            <span>Total</span>
+            <span>${finalTotal.toFixed(2)}</span>
+          </div>
+        </div>
+      </div>
+
+      {/* Shipping Information */}
+      <p className="bg-gray-200 text-2xl font-semibold py-3 my-4 px-5">
+        Ship to Address
+      </p>
+      <p className="text-xl bg-gray-700 py-3 mb-5 text-white text-center">
+        Home Delivery
+      </p>
+      <p className="text-2xl font-semibold py-3">Shipping Speed</p>
+      <form>
+        <div className="mb-4">
+          <input
+            type="radio"
+            name="shipping"
+            value="standard"
+            className="mr-2"
+            checked={selectedShipping === "standard"}
+            onChange={handleShippingChange}
+          />
+          <label className="font-semibold">
+            Standard - $15.00 CAD.
+            <br />
+          </label>
+          <label>Est. Delivery: 6-7 business days</label>
+        </div>
+        <div className="mb-4">
+          <input
+            type="radio"
+            name="shipping"
+            value="express"
+            className="mr-2"
+            checked={selectedShipping === "express"}
+            onChange={handleShippingChange}
+          />
+          <label className="font-semibold">
+            Express - $20.00 CAD
+            <br />
+          </label>
+          <label>Est. Delivery: 2-3 business days</label>
+        </div>
+        <div>
+          <p className="text-2xl font-semibold">Shipping Address</p>
+          <input
+            type="text"
+            placeholder="First Name"
+            className="w-full border border-gray-300 p-2 mb-2"
+            value={shippingAddress.firstName}
+            onChange={(e) =>
+              setNewShippingAddress({
+                ...shippingAddress,
+                firstName: e.target.value,
+              })
+            }
+            required
+          />
+          <input
+            type="text"
+            placeholder="Last Name"
+            className="w-full border border-gray-300 p-2 mb-2"
+            value={shippingAddress.lastName}
+            onChange={(e) =>
+              setNewShippingAddress({
+                ...shippingAddress,
+                lastName: e.target.value,
+              })
+            }
+            required
+          />
+          <input
+            type="text"
+            placeholder="Address"
+            className="w-full border border-gray-300 p-2 mb-2"
+            value={shippingAddress.address}
+            onChange={(e) =>
+              setNewShippingAddress({
+                ...shippingAddress,
+                address: e.target.value,
+              })
+            }
+            required
+          />
+          <input
+            type="text"
+            placeholder="City"
+            className="w-full border border-gray-300 p-2 mb-2"
+            value={shippingAddress.city}
+            onChange={(e) =>
+              setNewShippingAddress({
+                ...shippingAddress,
+                city: e.target.value,
+              })
+            }
+            required
+          />
+          <select
+            id="province"
+            name="province"
+            required
+            className="w-full border border-gray-300 p-2 mb-2"
+            value={shippingAddress.province}
+            onChange={(e) =>
+              setNewShippingAddress({
+                ...shippingAddress,
+                province: e.target.value,
+              })
+            }
+          >
+            <option value="">Province</option>
+            <option>Alberta</option>
+            <option>British Columbia</option>
+            <option>Manitoba</option>
+            <option>New Brunswick</option>
+            <option>Newfoundland and Labrador</option>
+            <option>Northwest Territory</option>
+            <option>Nova Scotia</option>
+            <option>Nunavut</option>
+            <option>Ontario</option>
+            <option>Prince Edward Island</option>
+            <option>Quebec</option>
+            <option>Saskatchewan</option>
+            <option>Yukon</option>
+          </select>
+          <input
+            type="text"
+            placeholder="Postal Code"
+            className="w-full border border-gray-300 p-2 mb-2"
+            value={shippingAddress.postalCode}
+            onChange={(e) =>
+              setNewShippingAddress({
+                ...shippingAddress,
+                postalCode: e.target.value,
+              })
+            }
+            required
+          />
+        </div>
+        <p className="bg-gray-200 text-2xl font-semibold py-3 my-4 px-5">
+          Order Contact
+        </p>
+        <input
+          type="text"
+          placeholder="Email Address"
+          className="w-full border border-gray-300 p-2 mb-2"
+          value={shippingAddress.email}
+          onChange={(e) =>
+            setNewShippingAddress({
+              ...shippingAddress,
+              email: e.target.value,
+            })
+          }
+          required
+        />
+        <input
+          type="text"
+          placeholder="Phone Number"
+          className="w-full border border-gray-300 p-2 mb-2"
+          value={shippingAddress.phone}
+          onChange={(e) =>
+            setNewShippingAddress({
+              ...shippingAddress,
+              phone: e.target.value,
+            })
+          }
+          required
+        />
+        <button
+          onClick={handlePayment}
+          className="w-full bg-black text-white py-3 px-6 rounded-lg hover:bg-gray-800 transition-colors mt-4"
+        >
+          Proceed to Payment
+        </button>
+      </form>
+    </div>
   );
 };
 

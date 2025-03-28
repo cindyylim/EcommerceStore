@@ -3,7 +3,7 @@ import axios from "../lib/axios";
 import { toast } from "react-hot-toast";
 
 export const useShoppingBagStore = create((set, get) => ({
-  ShoppingBag: [],
+  shoppingBag: [],
   coupon: null,
   total: 0,
   subtotal: 0,
@@ -31,42 +31,36 @@ export const useShoppingBagStore = create((set, get) => ({
     get().calculateTotals();
     toast.success("Coupon removed");
   },
-  addToShoppingBag: async (product) => {
+  addToShoppingBag: async (productId) => {
     try {
-      await axios.post("/api/ShoppingBag", { productId: product._id });
-      toast.success("Product added to ShoppingBag");
-
-      set((prevState) => {
-        const existingItem = prevState.ShoppingBag.find(
-          (item) => item._id === product._id
-        );
-        const newShoppingBag = existingItem
-          ? prevState.ShoppingBag.map((item) =>
-              item._id === product._id
-                ? { ...item, quantity: item.quantity + 1 }
-                : item
-            )
-          : [...prevState.ShoppingBag, { ...product, quantity: 1 }];
-        return { ShoppingBag: newShoppingBag, loading: false };
-      });
+      const response = await axios.post("/api/shoppingBag", { productId });
+      set({ shoppingBag: response.data });
+      toast.success("Product added to shopping bag");
       get().calculateTotals();
     } catch (error) {
-      toast.error(error.response.data.error || "Failed to create shopping bag");
+      toast.error(error.response?.data?.message || "Failed to add to shopping bag");
     }
   },
   removeFromShoppingBag: async (productId) => {
-    await axios.delete("/api/ShoppingBag", { data: { productId } });
-    set((prevState) => ({
-      ShoppingBag: prevState.ShoppingBag.filter((item) => item._id !== productId),
-    }));
-    get().calculateTotals();
+    try {
+      const response = await axios.delete("/api/shoppingBag", { data: { productId } });
+      set({ shoppingBag: response.data });
+      get().calculateTotals();
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Failed to remove from shopping bag");
+    }
   },
   clearShoppingBag: async () => {
-		set({ ShoppingBag: [], coupon: null, total: 0, subtotal: 0 });
-	},
+    try {
+      const response = await axios.delete("/api/shoppingBag", { data: { productId: null } });
+      set({ shoppingBag: response.data, coupon: null, total: 0, subtotal: 0 });
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Failed to clear shopping bag");
+    }
+  },
   calculateTotals: () => {
-    const { ShoppingBag, coupon } = get();
-    const subtotal = ShoppingBag.reduce(
+    const { shoppingBag, coupon } = get();
+    const subtotal = shoppingBag.reduce(
       (sum, item) => sum + (item.price * item.quantity),
       0
     );
@@ -74,7 +68,6 @@ export const useShoppingBagStore = create((set, get) => ({
 
     if (coupon) {
       const discount = subtotal * (coupon.discountPercentage / 100);
-      console.log(discount);
       total = subtotal - discount;
     }
 
@@ -82,41 +75,21 @@ export const useShoppingBagStore = create((set, get) => ({
   },
   getShoppingBagItems: async () => {
     try {
-      const response = await axios.get("/api/ShoppingBag");
-      set({ ShoppingBag: response.data });
+      const response = await axios.get("/api/shoppingBag");
+      set({ shoppingBag: response.data });
       get().calculateTotals();
     } catch (error) {
-      toast.error(error.response.data.error || "Failed to get ShoppingBag");
-    }
-  },
-  deleteShoppingBag: async (id) => {
-    try {
-      await axios.delete(`/api/ShoppingBag/${id}`);
-      set((prevState) => ({
-        ShoppingBag: prevState.ShoppingBag.filter((ShoppingBag) => ShoppingBag._id !== id),
-      }));
-    } catch (error) {
-      toast.error(error.response.data.error || "Failed to delete ShoppingBag");
+      console.error("Failed to get shopping bag:", error);
+      toast.error("Failed to get shopping bag");
     }
   },
   updateQuantity: async (productId, quantity) => {
-    if (quantity === 0) {
-      get().removeFromShoppingBag(productId);
-      return;
-    }
     try {
-      await axios.put(`/api/ShoppingBag/${productId}`, { quantity });
-      set((prevState) => ({
-        ShoppingBag: prevState.ShoppingBag.map((item) => {
-          if (item._id === productId) {
-            return { ...item, quantity };
-          }
-          return item;
-        }),
-      }));
+      const response = await axios.put(`/api/shoppingBag/${productId}`, { quantity });
+      set({ shoppingBag: response.data });
       get().calculateTotals();
     } catch (error) {
-      toast.error(error.response.data.error || "Failed to update quantity");
+      toast.error(error.response?.data?.message || "Failed to update quantity");
     }
   },
 }));
