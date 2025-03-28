@@ -67,9 +67,16 @@ A modern e-commerce platform built with React and Node.js, featuring a responsiv
    Create a `.env` file in the server directory:
    ```
    PORT=5000
-   MONGODB_URI=your_mongodb_uri
-   REDIS_URL=your_redis_url
+   MONGO_URI=your_mongodb_uri
+   UPSTASH_REDIS_URL=your_redis_url
+   ACCESS_TOKEN_SECRET=your_access_token_secret
+   REFRESH_TOKEN_SECRET=your_refresh_token_secret
+   CLOUDINARY_CLOUD_NAME=your_cloudinary_cloud_name
+   CLOUDINARY_API_KEY=your_cloudinary_api_key
+   CLOUDINARY_API_SECRET=your_cloudinary_api_secet
    STRIPE_SECRET_KEY=your_stripe_secret_key
+   CLIENT_URL=http://localhost:5173
+   REACT_APP_AXIOS_BASE_URL=http://localhost:5000/api
    ```
 
 4. **Running the Application**
@@ -105,10 +112,6 @@ A modern e-commerce platform built with React and Node.js, featuring a responsiv
 3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
 4. Push to the branch (`git push origin feature/AmazingFeature`)
 5. Open a Pull Request
-
-## License
-
-This project is licensed under the MIT License - see the LICENSE file for details.
 
 ## Acknowledgments
 
