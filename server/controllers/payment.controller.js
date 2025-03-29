@@ -133,7 +133,6 @@ export const checkoutSuccess = async (req, res) => {
       message:
         "Payment successful, order created, and coupon deactivated if used",
       orderId: newOrder._id,
-      success: true,
     });
   } catch (error) {
     console.log("Error in checkoutSuccess controller", error.message);

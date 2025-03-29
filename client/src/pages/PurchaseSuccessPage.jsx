@@ -4,19 +4,24 @@ import { useShoppingBagStore } from "../stores/useShoppingBagStore";
 import axios from "../lib/axios.js";
 import Confetti from "react-confetti";
 import { Link } from "react-router-dom"; 
+import toast from "react-hot-toast";
 
 const PurchaseSuccessPage = () => {
   const [isProcessing, setIsProcessing] = useState(true);
   const { clearShoppingBag } = useShoppingBagStore();
+  const [orderId, setOrderId] = useState(null);
   const [error, setError] = useState(null);
 
   useEffect(() => {
     const handleCheckoutSuccess = async (sessionId) => {
       try {
-        await axios.post("/api/payments/checkout-success", { sessionId });
+        const {orderId, message} =await axios.post("/api/payments/checkout-success", { sessionId });
+        setOrderId(orderId);
+        toast.success(message);
         clearShoppingBag();
       } catch (error) {
         console.log(error);
+        toast.error(error.response?.data?.message || "An error occurred during checkout");
       } finally {
         setIsProcessing(false);
       }
@@ -62,7 +67,7 @@ const PurchaseSuccessPage = () => {
           <div className="flex items-center justify-between mb-2">
             <span className="text-sm"> Order number</span>
             <span className="text-sm font-semibold">
-              #12345
+              {orderId || "No order ID found"}
             </span>
           </div>
           <div className="flex items-center justify-between">

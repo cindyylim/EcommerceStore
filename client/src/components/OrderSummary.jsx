@@ -15,7 +15,7 @@ const OrderSummary = () => {
   const formattedSubtotal = subtotal.toFixed(2);
   let formattedTotal = total.toFixed(2);
   const formattedSavings = savings.toFixed(2);
-  const [shippingAddress, setNewShippingAddress] = useState({
+  const [shippingInfo, setNewShippingInfo] = useState({
     firstName: "",
     lastName: "",
     address: "",
@@ -39,36 +39,29 @@ const OrderSummary = () => {
   };
 
   const handlePayment = async (e) => {
-    if (!shippingAddress.firstName) {
-      e.preventDefault();
+    e.preventDefault();
+    if (!shippingInfo.firstName) {
       alert("First name is required");
       return;
-    } else if (!shippingAddress.lastName) {
-      e.preventDefault();
+    } else if (!shippingInfo.lastName) {
       alert("Last name is required");
       return;
-    } else if (!shippingAddress.address) {
-      e.preventDefault();
+    } else if (!shippingInfo.address) {
       alert("Address is required");
       return;
-    } else if (!shippingAddress.city) {
-      e.preventDefault();
+    } else if (!shippingInfo.city) {
       alert("City is required");
       return;
-    } else if (!shippingAddress.province) {
-      e.preventDefault();
+    } else if (!shippingInfo.province) {
       alert("Province is required");
       return;
-    } else if (!shippingAddress.postalCode) {
-      e.preventDefault();
+    } else if (!shippingInfo.postalCode) {
       alert("Postal code is required");
       return;
-    } else if (!shippingAddress.email) {
-      e.preventDefault();
+    } else if (!shippingInfo.email) {
       alert("Email is required");
       return;
-    } else if (!shippingAddress.phone) {
-      e.preventDefault();
+    } else if (!shippingInfo.phone) {
       alert("Phone number is required");
       return;
     }
@@ -76,17 +69,17 @@ const OrderSummary = () => {
     const res = await axios.post("/api/payments/create-checkout-session", {
       products: shoppingBag,
       coupon: coupon ? coupon.code : null,
-      name: shippingAddress.firstName + " " + shippingAddress.lastName,
-      email: shippingAddress.email,
-      phone: shippingAddress.phone,
+      name: shippingInfo.firstName + " " + shippingInfo.lastName,
+      email: shippingInfo.email,
+      phone: shippingInfo.phone,
       address:
-        shippingAddress.address +
+        shippingInfo.address +
         ", " +
-        shippingAddress.city +
+        shippingInfo.city +
         ", " +
-        shippingAddress.province +
+        shippingInfo.province +
         ", " +
-        shippingAddress.postalCode,
+        shippingInfo.postalCode,
     });
     const session = res.data;
     const result = await stripe.redirectToCheckout({ sessionId: session.id });
@@ -115,7 +108,7 @@ const OrderSummary = () => {
                       Size: {item.selectedSize}
                     </p>
                   )}
-                  {item.isAvailable === false && (
+                  {item.errorMessage && (
                     <p className="text-sm text-red-600">
                       {item.errorMessage}
                     </p>
@@ -220,10 +213,10 @@ const OrderSummary = () => {
             type="text"
             placeholder="First Name"
             className="w-full border border-gray-300 p-2 mb-2"
-            value={shippingAddress.firstName}
+            value={shippingInfo.firstName}
             onChange={(e) =>
-              setNewShippingAddress({
-                ...shippingAddress,
+              setNewShippingInfo({
+                ...shippingInfo,
                 firstName: e.target.value,
               })
             }
@@ -233,10 +226,10 @@ const OrderSummary = () => {
             type="text"
             placeholder="Last Name"
             className="w-full border border-gray-300 p-2 mb-2"
-            value={shippingAddress.lastName}
+            value={shippingInfo.lastName}
             onChange={(e) =>
-              setNewShippingAddress({
-                ...shippingAddress,
+              setNewShippingInfo({
+                ...shippingInfo,
                 lastName: e.target.value,
               })
             }
@@ -246,10 +239,10 @@ const OrderSummary = () => {
             type="text"
             placeholder="Address"
             className="w-full border border-gray-300 p-2 mb-2"
-            value={shippingAddress.address}
+            value={shippingInfo.address}
             onChange={(e) =>
-              setNewShippingAddress({
-                ...shippingAddress,
+              setNewShippingInfo({
+                ...shippingInfo,
                 address: e.target.value,
               })
             }
@@ -259,10 +252,10 @@ const OrderSummary = () => {
             type="text"
             placeholder="City"
             className="w-full border border-gray-300 p-2 mb-2"
-            value={shippingAddress.city}
+            value={shippingInfo.city}
             onChange={(e) =>
-              setNewShippingAddress({
-                ...shippingAddress,
+              setNewShippingInfo({
+                ...shippingInfo,
                 city: e.target.value,
               })
             }
@@ -273,37 +266,37 @@ const OrderSummary = () => {
             name="province"
             required
             className="w-full border border-gray-300 p-2 mb-2"
-            value={shippingAddress.province}
+            value={shippingInfo.province}
             onChange={(e) =>
-              setNewShippingAddress({
-                ...shippingAddress,
+              setNewShippingInfo({
+                ...shippingInfo,
                 province: e.target.value,
               })
             }
           >
             <option value="">Province</option>
-            <option>Alberta</option>
-            <option>British Columbia</option>
-            <option>Manitoba</option>
-            <option>New Brunswick</option>
-            <option>Newfoundland and Labrador</option>
-            <option>Northwest Territory</option>
-            <option>Nova Scotia</option>
-            <option>Nunavut</option>
-            <option>Ontario</option>
-            <option>Prince Edward Island</option>
-            <option>Quebec</option>
-            <option>Saskatchewan</option>
-            <option>Yukon</option>
+            <option value="AB">Alberta</option>
+            <option value="BC">British Columbia</option>
+            <option value="MB">Manitoba</option>
+            <option value="NB">New Brunswick</option>
+            <option value="NL">Newfoundland and Labrador</option>
+            <option value="NT">Northwest Territory</option>
+            <option value="NS">Nova Scotia</option>
+            <option value="NU">Nunavut</option>
+            <option value="ON">Ontario</option>
+            <option value="PE">Prince Edward Island</option>
+            <option value="QC">Quebec</option>
+            <option value="SK">Saskatchewan</option>
+            <option value="YT">Yukon</option>
           </select>
           <input
             type="text"
             placeholder="Postal Code"
             className="w-full border border-gray-300 p-2 mb-2"
-            value={shippingAddress.postalCode}
+            value={shippingInfo.postalCode}
             onChange={(e) =>
-              setNewShippingAddress({
-                ...shippingAddress,
+              setNewShippingInfo({
+                ...shippingInfo,
                 postalCode: e.target.value,
               })
             }
@@ -317,10 +310,10 @@ const OrderSummary = () => {
           type="text"
           placeholder="Email Address"
           className="w-full border border-gray-300 p-2 mb-2"
-          value={shippingAddress.email}
+          value={shippingInfo.email}
           onChange={(e) =>
-            setNewShippingAddress({
-              ...shippingAddress,
+            setNewShippingInfo({
+              ...shippingInfo,
               email: e.target.value,
             })
           }
@@ -330,10 +323,10 @@ const OrderSummary = () => {
           type="text"
           placeholder="Phone Number"
           className="w-full border border-gray-300 p-2 mb-2"
-          value={shippingAddress.phone}
+          value={shippingInfo.phone}
           onChange={(e) =>
-            setNewShippingAddress({
-              ...shippingAddress,
+            setNewShippingInfo({
+              ...shippingInfo,
               phone: e.target.value,
             })
           }

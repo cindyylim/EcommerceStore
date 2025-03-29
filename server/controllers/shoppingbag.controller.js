@@ -162,6 +162,12 @@ export const getShoppingBagProducts = async (req, res) => {
             isAvailable: false,
             errorMessage: "Product no longer exists",
             shouldRemove: true,
+            description: product.description,
+            name: product.name,
+            image: product.image,
+            price: product.price,
+            quantity: item.quantity,
+            selectedSize: item.size,
           };
         }
 
@@ -179,6 +185,7 @@ export const getShoppingBagProducts = async (req, res) => {
           price: product.price,
           quantity: item.quantity,
           selectedSize: item.size,
+          description: product.description,
         };
 
         // Check various availability conditions
@@ -215,7 +222,6 @@ export const getShoppingBagProducts = async (req, res) => {
         // Product is available
         return {
           ...baseProduct,
-          description: product.description,
           isAvailable: true,
           maxQuantity: selectedSizeDetails
             ? selectedSizeDetails.quantity

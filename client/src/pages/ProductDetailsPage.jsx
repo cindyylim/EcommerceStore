@@ -47,7 +47,6 @@ const ProductDetailsPage = () => {
 
     const handleAddToBag = async () => {
         try {
-            console.log(product.hasSizes);
             if (product.hasSizes && !selectedSize) {
                 toast.error('Please select a size');
                 return;
