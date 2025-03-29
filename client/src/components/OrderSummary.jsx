@@ -13,7 +13,7 @@ const OrderSummary = () => {
   const [selectedShipping, setSelectedShipping] = useState("standard");
   const savings = subtotal - total;
   const formattedSubtotal = subtotal.toFixed(2);
-  const formattedTotal = total.toFixed(2);
+  let formattedTotal = total.toFixed(2);
   const formattedSavings = savings.toFixed(2);
   const [shippingAddress, setNewShippingAddress] = useState({
     firstName: "",
@@ -30,7 +30,9 @@ const OrderSummary = () => {
   const shippingCost = selectedShipping === "standard" ? 15 : 20;
 
   // Calculate final total with shipping
-  const finalTotal = Number(total) + shippingCost;
+  formattedTotal = Number(formattedTotal) + shippingCost;
+  const taxes = Number(formattedTotal) * 0.12;
+  const finalTotal = Number(formattedTotal) + taxes;
 
   const handleShippingChange = (event) => {
     setSelectedShipping(event.target.value);
@@ -160,6 +162,10 @@ const OrderSummary = () => {
         <div className="flex justify-between mb-2">
           <span>Shipping</span>
           <span>${shippingCost.toFixed(2)}</span>
+        </div>
+        <div className="flex justify-between mb-2">
+          <span>Taxes</span>
+          <span>${taxes.toFixed(2)}</span>
         </div>
         <div className="border-t pt-2 mt-2">
           <div className="flex justify-between font-semibold">
