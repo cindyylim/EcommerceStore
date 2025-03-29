@@ -9,7 +9,7 @@ const orderSchema = new mongoose.Schema(
     },
     products: [
       {
-        product: {
+        id: {
           type: mongoose.Schema.Types.ObjectId,
           ref: "Product",
           required: true,
@@ -19,10 +19,9 @@ const orderSchema = new mongoose.Schema(
           required: true,
           min: 1,
         },
-        price: {
-          type: Number,
+        size: {
+          type: String,
           required: true,
-          min: 0,
         },
       },
     ],
@@ -34,6 +33,7 @@ const orderSchema = new mongoose.Schema(
     stripeSessionId: {
       type: String,
       unique: true,
+      sparse: true,
     },
     name: {
       type: String,
@@ -54,6 +54,17 @@ const orderSchema = new mongoose.Schema(
   },
   { timestamps: true }
 );
+
+// Add a pre-save hook to check for existing session ID
+orderSchema.pre('save', async function(next) {
+  if (this.stripeSessionId) {
+    const existingOrder = await this.constructor.findOne({ stripeSessionId: this.stripeSessionId });
+    if (existingOrder && existingOrder._id.toString() !== this._id.toString()) {
+      next(new Error('Order with this Stripe session ID already exists'));
+    }
+  }
+  next();
+});
 
 const Order = mongoose.model("Order", orderSchema);
 

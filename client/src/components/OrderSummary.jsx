@@ -28,7 +28,7 @@ const OrderSummary = () => {
 
   // Calculate shipping cost
   const shippingCost = selectedShipping === "standard" ? 15 : 20;
-
+  const disabled = shoppingBag.some(item => !item.isAvailable);
   // Calculate final total with shipping
   formattedTotal = Number(formattedTotal) + shippingCost;
   const taxes = Number(formattedTotal) * 0.12;
@@ -334,7 +334,8 @@ const OrderSummary = () => {
         />
         <button
           onClick={handlePayment}
-          className="w-full bg-black text-white py-3 px-6 rounded-lg hover:bg-gray-800 transition-colors mt-4"
+          disabled={disabled}
+          className="w-full py-3 bg-green-600 text-white px-6 rounded-lg hover:bg-green-800 transition-colors mt-4 disabled:bg-gray-300 disabled:cursor-not-allowed"
         >
           Proceed to Payment
         </button>

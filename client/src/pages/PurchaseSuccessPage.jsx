@@ -7,17 +7,19 @@ import { Link } from "react-router-dom";
 import toast from "react-hot-toast";
 
 const PurchaseSuccessPage = () => {
-  const [isProcessing, setIsProcessing] = useState(true);
+  const [isProcessing, setIsProcessing] = useState(false);
   const { clearShoppingBag } = useShoppingBagStore();
   const [orderId, setOrderId] = useState(null);
   const [error, setError] = useState(null);
 
   useEffect(() => {
     const handleCheckoutSuccess = async (sessionId) => {
+      setIsProcessing(true);
+      if (isProcessing) return;
       try {
-        const {orderId, message} =await axios.post("/api/payments/checkout-success", { sessionId });
-        setOrderId(orderId);
-        toast.success(message);
+        const res = await axios.post("/api/payments/checkout-success", { sessionId });
+        setOrderId(res.data.orderId);
+        toast.success(res.data.message);
         clearShoppingBag();
       } catch (error) {
         console.log(error);
@@ -35,7 +37,7 @@ const PurchaseSuccessPage = () => {
       setIsProcessing(false);
       setError("No session ID found in the URL");
     }
-  }, [clearShoppingBag]);
+  }, []);
 
   if (isProcessing) return "Processing...";
 

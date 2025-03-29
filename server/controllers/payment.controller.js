@@ -2,6 +2,10 @@ import Coupon from "../models/coupon.model.js";
 import Order from "../models/order.model.js";
 import Stripe from "stripe";
 import dotenv from "dotenv";
+import {
+  updateProductStock,
+  revertStockUpdate,
+} from "../utils/stockService.js";
 
 dotenv.config();
 
@@ -59,7 +63,7 @@ export const createCheckoutSession = async (req, res) => {
           products.map((p) => ({
             id: p._id,
             quantity: p.quantity,
-            price: p.price,
+            size: p.selectedSize,
           }))
         ),
         name: name,
@@ -113,14 +117,10 @@ export const checkoutSuccess = async (req, res) => {
         );
       }
     }
-    const products = JSON.parse(session.metadata.products); 
+    const products = JSON.parse(session.metadata.products);
     const newOrder = new Order({
       user: session.metadata.userId,
-      products: products.map((p) => ({
-        product: p.id,
-        quantity: p.quantity,
-        price: p.price,
-      })),
+      products: products,
       totalAmount: session.amount_total / 100,
       stripeSessionId: sessionId,
       name: session.metadata.name,
@@ -128,11 +128,13 @@ export const checkoutSuccess = async (req, res) => {
       phone: session.metadata.phone,
       address: session.metadata.address,
     });
-    await newOrder.save();
+    // Update product stock
+    await updateProductStock(products);
+    const order = await newOrder.save();
     return res.status(200).json({
       message:
         "Payment successful, order created, and coupon deactivated if used",
-      orderId: newOrder._id,
+      orderId: order._id,
     });
   } catch (error) {
     console.log("Error in checkoutSuccess controller", error.message);

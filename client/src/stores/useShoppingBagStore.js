@@ -57,7 +57,7 @@ export const useShoppingBagStore = create((set, get) => ({
   },
   clearShoppingBag: async () => {
     try {
-      const response = await axios.delete("/api/shoppingBag", { data: { productId: null } });
+      const response = await axios.delete("/api/shoppingBag", { productId: null });
       set({ shoppingBag: response.data, coupon: null, total: 0, subtotal: 0 });
     } catch (error) {
       toast.error(error.response?.data?.message || "Failed to clear shopping bag");
