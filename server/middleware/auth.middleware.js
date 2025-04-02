@@ -16,7 +16,7 @@ export const protectRoute = async (req, res, next) => {
     if (!req.cookies.accessToken) {
       return res
         .status(401)
-        .json({ message: "Unauthorized - No access token provided" });
+        .json({ message: "Please log in to continue" });
     }
     try {
       const decoded = jwt.verify(
@@ -27,7 +27,7 @@ export const protectRoute = async (req, res, next) => {
       if (!user) {
         return res
           .status(401)
-          .json({ message: "Unauthorized - User not found" });
+          .json({ message: "Please log in to continue" });
       }
       req.user = user;
       next();
@@ -35,19 +35,19 @@ export const protectRoute = async (req, res, next) => {
       if (error.name === "TokenExpiredError") {
         return res
           .status(401)
-          .json({ message: "Unauthorized - Access token expired" });
+          .json({ message: "Your session has expired. Please log in again" });
       }
       throw error;
     }
   } catch (error) {
     console.log("Error in protectRoute middleware", error.message);
-    return res.status(401).json({ message: "Unauthorized - Invalid access token" });
+    return res.status(401).json({ message: "Please log in to continue" });
   }
 };
 
 export const adminRoute = (req, res, next) => {
-    if (req.user && req.user.role !== "admin") {
-      return res.status(403).json({ message: "Forbidden - Admin access required" });
-    }
-    next();
+  if (req.user && req.user.role !== "admin") {
+    return res.status(403).json({ message: "Forbidden - Admin access required" });
+  }
+  next();
 }

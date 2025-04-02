@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { useWishlistStore } from '../stores/useWishlistStore';
 import { Link } from 'react-router-dom';
 import { toast } from 'react-hot-toast';
-import LoadingSpinner from '../components/LoadingSpinner';
+import { PageLoader } from '../components/SkeletonLoader';
 
 const WishlistPage = () => {
     const { wishlistItems, isLoading, error, getWishlistItems, removeFromWishlist } = useWishlistStore();
@@ -20,13 +20,13 @@ const WishlistPage = () => {
         }
     };
 
-    if (isLoading) return <LoadingSpinner />;
+    if (isLoading) return <PageLoader />;
     if (error) return <div className="text-red-500 text-center mt-4">{error}</div>;
 
     return (
         <div className="container mx-auto px-4 py-8">
             <h1 className="text-3xl font-bold mb-8">My Wishlist</h1>
-            
+
             {wishlistItems.length === 0 ? (
                 <div className="text-center py-8">
                     <p className="text-gray-500 mb-4">Your wishlist is empty</p>

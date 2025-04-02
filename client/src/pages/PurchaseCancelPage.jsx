@@ -1,8 +1,24 @@
 import { XCircle, ArrowLeft } from "lucide-react";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
+import { useEffect } from "react";
+import axios from "../lib/axios";
 
 const PurchaseCancelPage = () => {
+  // Clear checkout start time and clean up expired locks when payment is cancelled
+  useEffect(() => {
+    const cleanup = async () => {
+      try {
+        // Clean up expired locks on the server
+        await axios.post('/api/shoppingbag/cleanup-expired-locks');
+      } catch (error) {
+        console.error('Error cleaning up expired locks:', error);
+      }
+    };
+    
+    cleanup();
+  }, []);
+
   return (
     <div className="min-h-screen flex items-center justify-center px-4">
       <motion.div

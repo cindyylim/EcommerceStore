@@ -10,7 +10,7 @@ import "./index.css";
 import { Toaster } from "react-hot-toast";
 import { useUserStore } from "./stores/useUserStore.js";
 import { useEffect } from "react";
-import LoadingSpinner from "./components/LoadingSpinner.jsx";
+import { PageLoader } from "./components/SkeletonLoader.jsx";
 import AdminPage from "./pages/AdminPage.jsx";
 import { useShoppingBagStore } from "./stores/useShoppingBagStore.js";
 import PurchaseCancelPage from "./pages/PurchaseCancelPage.jsx";
@@ -31,7 +31,7 @@ function App() {
     getShoppingBagItems();
   }, [getShoppingBagItems, user]);
 
-  if (checkingAuth) return <LoadingSpinner />;
+  if (checkingAuth) return <PageLoader />;
 
   return (
     <div className="min-h-screen relative overflow-hidden">
@@ -60,7 +60,7 @@ function App() {
         ></Route>
         <Route
           path="/purchase-success"
-          element={user ? <PurchaseSuccessPage /> : <Navigate to="/login" />}
+          element={<PurchaseSuccessPage />}
         ></Route>
         <Route
           path="/purchase-cancel"

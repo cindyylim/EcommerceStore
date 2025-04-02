@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import axios from 'axios';
-import LoadingSpinner from '../components/LoadingSpinner';
+import { PageLoader } from '../components/SkeletonLoader';
 import ProductCard from '../components/ProductCard';
 import SortSelect from '../components/SortSelect';
 
@@ -35,7 +35,7 @@ const SearchPage = () => {
   }, [query, sort]);
 
   if (loading) {
-    return <LoadingSpinner />;
+    return <PageLoader />;
   }
 
   if (error) {

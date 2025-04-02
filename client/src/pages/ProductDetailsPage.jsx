@@ -4,7 +4,7 @@ import axios from 'axios';
 import { useWishlistStore } from '../stores/useWishlistStore';
 import { useShoppingBagStore } from '../stores/useShoppingBagStore';
 import { toast } from 'react-hot-toast';
-import LoadingSpinner from '../components/LoadingSpinner';
+import { ProductDetailsSkeleton } from '../components/SkeletonLoader';
 import SizeSelector from '../components/SizeSelector';
 
 const ProductDetailsPage = () => {
@@ -15,7 +15,6 @@ const ProductDetailsPage = () => {
     const [selectedSize, setSelectedSize] = useState(null);
     const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlistStore();
     const { addToShoppingBag } = useShoppingBagStore();
-
     useEffect(() => {
         const fetchProduct = async () => {
             try {
@@ -55,11 +54,11 @@ const ProductDetailsPage = () => {
             await addToShoppingBag(productId, selectedSize);
             setSelectedSize(null); // Reset size selection after adding
         } catch (error) {
-            toast.error('Failed to add to shopping bag');
+            toast.error("Failed to add to shopping bag");
         }
     };
 
-    if (isLoading) return <LoadingSpinner />;
+    if (isLoading) return <ProductDetailsSkeleton />;
     if (error) return <div className="text-red-500 text-center mt-4">{error}</div>;
     if (!product) return <div className="text-center mt-4">Product not found</div>;
 
@@ -78,11 +77,10 @@ const ProductDetailsPage = () => {
                     />
                     <button
                         onClick={handleWishlistToggle}
-                        className={`absolute top-4 right-4 p-2 rounded-full ${
-                            isInWishlist(productId)
-                                ? 'bg-red-500 text-white'
-                                : 'bg-white text-gray-600'
-                        } hover:opacity-80`}
+                        className={`absolute top-4 right-4 p-2 rounded-full ${isInWishlist(productId)
+                            ? 'bg-red-500 text-white'
+                            : 'bg-white text-gray-600'
+                            } hover:opacity-80`}
                     >
                         <svg
                             xmlns="http://www.w3.org/2000/svg"
@@ -106,7 +104,7 @@ const ProductDetailsPage = () => {
                     <h1 className="text-3xl font-bold">{product.name}</h1>
                     <p className="text-2xl font-semibold text-gray-800">${product.price}</p>
                     <p className="text-gray-600">{product.description}</p>
-                    
+
                     {/* Size Selection */}
                     {product.hasSizes && (
                         <div className="mt-6">
@@ -133,14 +131,14 @@ const ProductDetailsPage = () => {
                     {/* Add to Bag Button */}
                     <button
                         onClick={handleAddToBag}
-                        disabled={product.hasSizes && !hasAvailableSizes}
-                        className={`w-full py-3 px-6 rounded-lg transition-colors ${
-                            product.hasSizes && !hasAvailableSizes
-                                ? 'bg-gray-400 cursor-not-allowed'
-                                : 'bg-black hover:bg-gray-800 text-white'
-                        }`}
+                        disabled={product.hasSizes && !hasAvailableSizes || !product.inStock}
+                        className={`w-full py-3 px-6 rounded-lg transition-colors ${product.hasSizes && !hasAvailableSizes || !product.inStock
+                            ? 'bg-gray-400 cursor-not-allowed'
+                            : 'bg-black hover:bg-gray-800 text-white'
+                            }`}
                     >
-                        {product.hasSizes && !hasAvailableSizes ? 'Out of Stock' : 'Add to Shopping Bag'}
+                        {product.hasSizes && !hasAvailableSizes ? 'Out of Stock' :
+                            !product.inStock ? 'Out of Stock' : 'Add to Shopping Bag'}
                     </button>
                 </div>
             </div>

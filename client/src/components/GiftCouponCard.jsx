@@ -42,7 +42,7 @@ const GiftCouponCard = () => {
           <input
             type="text"
             id="voucher"
-            className="block w-full rounded-lg border p-2.5 text-sm  placeholder-gray-400 focus:border-yellow-600 focus:outline-none focus:ring-yellow-500"
+            className="block w-full rounded-lg border p-2.5 text-sm  placeholder-gray-400 focus:border-indigo-600 focus:outline-none focus:ring-indigo-500"
             placeholder="Enter code here"
             value={userInputCode}
             onChange={(e) => setUserInputCode(e.target.value)}
@@ -51,7 +51,7 @@ const GiftCouponCard = () => {
         </div>
         <motion.button
           type="button"
-          className="flex w-full items-center justify-center rounded-lg bg-yellow-600 px-5 py-2.5 text-sm font-medium  hover:bg-yellow-700 focus:outline-none focus:ring-4 focus:ring-yellow-300"
+          className="flex w-full items-center justify-center rounded-lg bg-indigo-600 px-5 py-2.5 text-sm font-medium  hover:bg-indigo-700 focus:outline-none focus:ring-4 focus:ring-indigo-300"
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
           onClick={handleApplyCoupon}

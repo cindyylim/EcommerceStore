@@ -6,7 +6,7 @@ export const getAllProducts = async (req, res) => {
   try {
     const { sort } = req.query;
     let query = Product.find();
-    
+
     // Apply sorting based on the sort parameter
     switch (sort) {
       case 'featured':
@@ -59,6 +59,12 @@ export const createProduct = async (req, res) => {
       return res.status(400).json({ message: "Sizes are required for products with sizes" });
     }
 
+    // Initialize sizes with inStock status
+    const processedSizes = hasSizes ? sizes.map(size => ({
+      ...size,
+      inStock: size.quantity > 0
+    })) : [];
+
     const product = await Product.create({
       name,
       description,
@@ -67,7 +73,11 @@ export const createProduct = async (req, res) => {
       category,
       isFeatured,
       hasSizes,
-      sizes: hasSizes ? sizes : []
+      sizes: processedSizes,
+      quantity: hasSizes ? sizes.reduce((total, size) => total + size.quantity, 0) : (req.body.quantity || 0),
+      inStock: hasSizes ?
+        processedSizes.some(size => size.quantity > 0) :
+        ((req.body.quantity || 0) > 0)
     });
     return res.status(201).json(product);
   } catch (error) {
@@ -126,10 +136,10 @@ export const getRecommendedProducts = async (req, res) => {
 export const getProductsByCategory = async (req, res) => {
   const { category } = req.params;
   const { sort } = req.query;
-  
+
   try {
     let query = Product.find({ category });
-    
+
     // Apply sorting based on the sort parameter
     switch (sort) {
       case 'featured':
@@ -181,20 +191,22 @@ async function updateFeaturedProductsCache() {
 
 export const getProductById = async (req, res) => {
   try {
-      const product = await Product.findById(req.params.productId);
-      if (!product) {
-          return res.status(404).json({ message: 'Product not found' });
-      }
-      res.json(product);
+    const product = await Product.findById(req.params.productId);
+    if (!product) {
+      return res.status(404).json({ message: 'Product not found' });
+    }
+    const productData = product.toObject();
+    res.json(productData);
   } catch (error) {
-      res.status(500).json({ message: 'Error fetching product details' });
+    console.error("Error in getProductById:", error);
+    res.status(500).json({ message: 'Error fetching product details' });
   }
 }
 
 export const searchProducts = async (req, res) => {
   try {
     const { q, sort } = req.query;
-    
+
     if (!q) {
       return res.status(400).json({ message: "Search query is required" });
     }
@@ -236,9 +248,9 @@ export const searchProducts = async (req, res) => {
       stack: error.stack,
       query: req.query
     });
-    return res.status(500).json({ 
+    return res.status(500).json({
       message: "Error searching products",
-      error: error.message 
+      error: error.message
     });
   }
 };
@@ -255,14 +267,33 @@ export const updateProductSizes = async (req, res) => {
 
     // Find the product
     const product = await Product.findById(productId);
-    console.log(product);
     if (!product) {
       return res.status(404).json({ message: "Product not found" });
     }
 
     // Update the product's size information
     product.hasSizes = hasSizes;
-    product.sizes = hasSizes ? sizes : [];
+
+    if (hasSizes) {
+      // Initialize sizes with inStock status
+      product.sizes = sizes.map(size => ({
+        ...size,
+        inStock: size.quantity > 0
+      }));
+    } else {
+      product.sizes = [];
+    }
+
+    // Update the main inStock status
+    product.inStock = hasSizes ?
+      product.sizes.some(size => size.quantity > 0) :
+      product.quantity > 0;
+
+    product.quantity = product.sizes.reduce((total, size) => total + size.quantity, 0);
+    // Ensure inStock is properly set based on quantity for non-sized products
+    if (!hasSizes && product.quantity === 0) {
+      product.inStock = false;
+    }
 
     // Save the updated product
     const updatedProduct = await product.save();

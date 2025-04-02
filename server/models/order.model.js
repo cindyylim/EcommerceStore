@@ -21,7 +21,7 @@ const orderSchema = new mongoose.Schema(
         },
         size: {
           type: String,
-          required: true,
+          required: false, // Not all products have sizes
         },
       },
     ],
@@ -56,7 +56,7 @@ const orderSchema = new mongoose.Schema(
 );
 
 // Add a pre-save hook to check for existing session ID
-orderSchema.pre('save', async function(next) {
+orderSchema.pre('save', async function (next) {
   if (this.stripeSessionId) {
     const existingOrder = await this.constructor.findOne({ stripeSessionId: this.stripeSessionId });
     if (existingOrder && existingOrder._id.toString() !== this._id.toString()) {

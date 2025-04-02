@@ -1,3 +1,383 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+@layer base {
+  :root {
+    /* Color Palette - Modern Blue/Purple Theme */
+    --color-primary: 99, 102, 241; /* indigo-500 */
+    --color-primary-dark: 67, 56, 202; /* indigo-700 */
+    --color-primary-light: 224, 231, 255; /* indigo-100 */
+    --color-secondary: 236, 72, 153; /* pink-500 */
+    --color-accent: 251, 146, 60; /* orange-400 */
+    --color-success: 16, 185, 129; /* emerald-500 */
+    --color-warning: 251, 191, 36; /* amber-400 */
+    
+    /* Neutral Colors */
+    --color-gray-50: 249, 250, 251;
+    --color-gray-100: 243, 244, 246;
+    --color-gray-200: 229, 231, 235;
+    --color-gray-300: 209, 213, 219;
+    --color-gray-400: 156, 163, 175;
+    --color-gray-500: 107, 114, 128;
+    --color-gray-600: 75, 85, 99;
+    --color-gray-700: 55, 65, 81;
+    --color-gray-800: 31, 41, 55;
+    --color-gray-900: 17, 24, 39;
+    
+    /* Typography */
+    --font-family: 'Inter', system-ui, sans-serif;
+    --font-size-xs: 0.75rem;
+    --font-size-sm: 0.875rem;
+    --font-size-base: 1rem;
+    --font-size-lg: 1.125rem;
+    --font-size-xl: 1.25rem;
+    --font-size-2xl: 1.5rem;
+    --font-size-3xl: 1.875rem;
+    --font-size-4xl: 2.25rem;
+    --font-size-5xl: 3rem;
+    
+    /* Spacing */
+    --spacing-xs: 0.25rem;
+    --spacing-sm: 0.5rem;
+    --spacing-md: 1rem;
+    --spacing-lg: 1.5rem;
+    --spacing-xl: 2rem;
+    --spacing-2xl: 3rem;
+    --spacing-3xl: 4rem;
+    
+    /* Border Radius */
+    --radius-sm: 0.25rem;
+    --radius-md: 0.5rem;
+    --radius-lg: 0.75rem;
+    --radius-xl: 1rem;
+    --radius-2xl: 1.5rem;
+    --radius-full: 9999px;
+    
+    /* Shadows */
+    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    --shadow-2xl: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    
+    /* Transitions */
+    --transition-fast: 150ms ease-in-out;
+    --transition-normal: 300ms ease-in-out;
+    --transition-slow: 500ms ease-in-out;
+  }
+
+  * {
+    @apply border-gray-200;
+  }
+
+  body {
+    font-family: var(--font-family);
+    font-feature-settings: 'rlig' 1, 'calt' 1;
+  }
+
+  /* Custom scrollbar */
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: rgb(var(--color-gray-100));
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: rgb(var(--color-gray-300));
+    border-radius: var(--radius-full);
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: rgb(var(--color-gray-400));
+  }
+
+  /* Focus styles */
+  :focus-visible {
+    @apply outline-none ring-2 ring-indigo-400 ring-offset-2;
+  }
+
+  /* Smooth scrolling */
+  html {
+    scroll-behavior: smooth;
+  }
+
+  /* Selection */
+  ::selection {
+    background-color: rgb(var(--color-primary-light));
+    color: rgb(var(--color-gray-900));
+  }
+}
+
+@layer components {
+  /* Button Components */
+  .btn {
+    @apply inline-flex items-center justify-center rounded-lg font-medium transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none;
+    padding: 0.5rem 1rem;
+    font-size: var(--font-size-sm);
+    border-radius: var(--radius-lg);
+    transition: var(--transition-normal);
+  }
+
+  .btn-primary {
+    @apply bg-indigo-500 text-white hover:bg-indigo-600 focus:ring-indigo-400 shadow-md hover:shadow-lg transform hover:-translate-y-0.5;
+  }
+
+  .btn-secondary {
+    @apply bg-gray-100 text-gray-900 hover:bg-gray-200 focus:ring-gray-300 border border-gray-300;
+  }
+
+  .btn-outline {
+    @apply border-2 border-indigo-500 text-indigo-500 hover:bg-indigo-500 hover:text-white focus:ring-indigo-400;
+  }
+
+  .btn-ghost {
+    @apply text-gray-600 hover:text-gray-900 hover:bg-gray-100 focus:ring-gray-300;
+  }
+
+  .btn-danger {
+    @apply bg-red-500 text-white hover:bg-red-600 focus:ring-red-500;
+  }
+
+  .btn-sm {
+    @apply px-3 py-1.5 text-xs;
+  }
+
+  .btn-lg {
+    @apply px-6 py-3 text-base;
+  }
+
+  /* Card Components */
+  .card {
+    @apply bg-white rounded-xl shadow-md border border-gray-200 overflow-hidden transition-all duration-300;
+  }
+
+  .card-hover {
+    @apply hover:shadow-xl hover:-translate-y-1;
+  }
+
+  .card-header {
+    @apply px-6 py-4 border-b border-gray-200 bg-gray-50;
+  }
+
+  .card-body {
+    @apply px-6 py-4;
+  }
+
+  .card-footer {
+    @apply px-6 py-4 border-t border-gray-200 bg-gray-50;
+  }
+
+  /* Input Components */
+  .input {
+    @apply w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-400 focus:border-transparent transition-all duration-300;
+  }
+
+  .input-error {
+    @apply border-red-500 focus:ring-red-500;
+  }
+
+  .input-group {
+    @apply relative;
+  }
+
+  .input-group .input {
+    @apply pl-10;
+  }
+
+  .input-icon {
+    @apply absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400;
+  }
+
+  /* Badge Components */
+  .badge {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
+  }
+
+  .badge-primary {
+    @apply bg-indigo-100 text-indigo-800;
+  }
+
+  .badge-secondary {
+    @apply bg-gray-100 text-gray-800;
+  }
+
+  .badge-success {
+    @apply bg-green-100 text-green-800;
+  }
+
+  .badge-danger {
+    @apply bg-red-100 text-red-800;
+  }
+
+  /* Alert Components */
+  .alert {
+    @apply p-4 rounded-lg border;
+  }
+
+  .alert-success {
+    @apply bg-green-50 border-green-200 text-green-800;
+  }
+
+  .alert-warning {
+    @apply bg-amber-50 border-amber-200 text-amber-800;
+  }
+
+  .alert-danger {
+    @apply bg-red-50 border-red-200 text-red-800;
+  }
+
+  .alert-info {
+    @apply bg-blue-50 border-blue-200 text-blue-800;
+  }
+
+  /* Loading Spinner */
+  .spinner {
+    @apply animate-spin rounded-full border-2 border-gray-300 border-t-indigo-500;
+  }
+
+  /* Skeleton Loader */
+  .skeleton {
+    @apply bg-gray-200 rounded animate-pulse;
+  }
+
+  /* Container */
+  .container-custom {
+    @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+  }
+
+  /* Text Utilities */
+  .text-gradient {
+    @apply bg-gradient-to-r from-indigo-500 to-purple-600 bg-clip-text text-transparent;
+  }
+
+  /* Glass Effect */
+  .glass {
+    @apply bg-white bg-opacity-80 backdrop-blur-md border border-white border-opacity-20;
+  }
+
+  /* Hover Effects */
+  .hover-lift {
+    @apply transition-transform duration-300 hover:-translate-y-1;
+  }
+
+  .hover-scale {
+    @apply transition-transform duration-300 hover:scale-105;
+  }
+
+  /* Navigation */
+  .nav-link {
+    @apply text-gray-600 hover:text-indigo-500 transition-colors duration-300 font-medium;
+  }
+
+  .nav-link-active {
+    @apply text-indigo-500 font-semibold;
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  .text-pretty {
+    text-wrap: pretty;
+  }
+
+  /* Animation utilities */
+  .animate-fade-in {
+    animation: fadeIn 0.5s ease-in-out;
+  }
+
+  .animate-slide-up {
+    animation: slideUp 0.5s ease-out;
+  }
+
+  .animate-slide-down {
+    animation: slideDown 0.5s ease-out;
+  }
+
+  .animate-scale-in {
+    animation: scaleIn 0.3s ease-out;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  @keyframes slideUp {
+    from { 
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to { 
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes slideDown {
+    from { 
+      opacity: 0;
+      transform: translateY(-20px);
+    }
+    to { 
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes scaleIn {
+    from { 
+      opacity: 0;
+      transform: scale(0.95);
+    }
+    to { 
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
+  /* Responsive text sizes */
+  .text-responsive-xs {
+    @apply text-xs sm:text-sm;
+  }
+
+  .text-responsive-sm {
+    @apply text-sm sm:text-base;
+  }
+
+  .text-responsive-base {
+    @apply text-base sm:text-lg;
+  }
+
+  .text-responsive-lg {
+    @apply text-lg sm:text-xl;
+  }
+
+  .text-responsive-xl {
+    @apply text-xl sm:text-2xl;
+  }
+
+  .text-responsive-2xl {
+    @apply text-2xl sm:text-3xl;
+  }
+
+  .text-responsive-3xl {
+    @apply text-3xl sm:text-4xl;
+  }
+
+  .text-responsive-4xl {
+    @apply text-4xl sm:text-5xl;
+  }
+
+  .text-responsive-5xl {
+    @apply text-5xl sm:text-6xl;
+  }
+}

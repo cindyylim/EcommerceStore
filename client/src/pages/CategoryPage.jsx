@@ -20,7 +20,7 @@ const CategoryPage = () => {
       <div className="relative z-10 max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <div className="flex justify-between items-center mb-8">
           <motion.h1
-            className="text-4xl sm:text-5xl font-bold text-yellow-400"
+            className="text-4xl sm:text-5xl font-bold text-indigo-400"
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}

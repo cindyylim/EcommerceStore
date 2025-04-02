@@ -76,7 +76,7 @@ const CreateProductForm = () => {
             onChange={(e) =>
               setNewProduct({ ...newProduct, name: e.target.value })
             }
-            className="mt-1 block w-full border rounded-md shadow-sm py-2 px-3  focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500"
+            className="mt-1 block w-full border rounded-md shadow-sm py-2 px-3  focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
             required
           />
         </div>
@@ -96,7 +96,7 @@ const CreateProductForm = () => {
               setNewProduct({ ...newProduct, description: e.target.value })
             }
             rows="3"
-            className="mt-1 block w-full rounded-md shadow-sm py-2 px-3  focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500"
+            className="mt-1 block w-full rounded-md shadow-sm py-2 px-3  focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
             required
           />
         </div>
@@ -116,7 +116,7 @@ const CreateProductForm = () => {
               setNewProduct({ ...newProduct, price: e.target.value })
             }
             step="0.01"
-            className="mt-1 block w-full rounded-md shadow-sm py-2 px-3  focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500"
+            className="mt-1 block w-full rounded-md shadow-sm py-2 px-3  focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
             required
           />
         </div>
@@ -134,7 +134,7 @@ const CreateProductForm = () => {
             onChange={(e) =>
               setNewProduct({ ...newProduct, category: e.target.value })
             }
-            className="mt-1 block w-full rounded-md shadow-sm py-2 px-3  focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500"
+            className="mt-1 block w-full rounded-md shadow-sm py-2 px-3  focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
             required
           >
             <option value="">Select a category</option>
@@ -155,7 +155,7 @@ const CreateProductForm = () => {
           />
           <label
             htmlFor="image"
-            className="cursor-pointer py-2 px-3 border rounded-md shadow-sm text-sm leading-4 font-medium hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset focus:ring-yellow-500"
+            className="cursor-pointer py-2 px-3 border rounded-md shadow-sm text-sm leading-4 font-medium hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset focus:ring-indigo-500"
           >
             <Upload className="h-5 w-5 inline-block mr-2" />
             Upload Image
@@ -166,7 +166,7 @@ const CreateProductForm = () => {
         </div>
         <button
           type="submit"
-          className="mt-1 flex w-full justify-cemter py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium  bg-yellow-600 hover:bg-yellow-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500 disabled:opacity-50"
+          className="mt-1 flex w-full justify-cemter py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium  bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50"
           disabled={loading}
         >
           {loading ? (

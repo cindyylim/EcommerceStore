@@ -1,8 +1,8 @@
-import React, {useState, useEffect}from "react";
+import React, { useState, useEffect } from "react";
 import ProductCard from "./ProductCard.jsx";
 import axios from "../lib/axios";
 import toast from "react-hot-toast";
-import LoadingSpinner from "./LoadingSpinner.jsx";
+import { ProductCardSkeleton } from "./SkeletonLoader.jsx";
 
 const YouMightLike = () => {
   const [recommendations, setRecommendations] = useState([]);
@@ -16,7 +16,7 @@ const YouMightLike = () => {
       } catch (error) {
         toast.error(
           error.response.data.message ||
-            "An error occurred while fetching recommendations"
+          "An error occurred while fetching recommendations"
         );
       } finally {
         setIsLoading(false);
@@ -26,7 +26,16 @@ const YouMightLike = () => {
   }, []);
 
   if (isLoading) {
-    return <LoadingSpinner/>
+    return (
+      <div className="mt-8">
+        <h3 className="text-2xl font-semibold mb-4">YOU MIGHT LIKE</h3>
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-2">
+          {[1, 2, 3].map((i) => (
+            <ProductCardSkeleton key={i} />
+          ))}
+        </div>
+      </div>
+    );
   }
   return (
     <div className="mt-8">

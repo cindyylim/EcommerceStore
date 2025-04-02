@@ -1,20 +1,21 @@
 import Coupon from "../models/coupon.model.js";
 import Order from "../models/order.model.js";
+import User from "../models/user.model.js";
 import Stripe from "stripe";
-import {
-  updateProductStock,
-  revertStockUpdate,
-} from "../utils/stockService.js";
+import { reserveProducts, updateProductStock } from "../utils/stockService.js";
 import dotenv from "dotenv";
-import path from 'path';
-import { fileURLToPath } from 'url';
+import path from "path";
+import { fileURLToPath } from "url";
+import IdempotencyKey from "../models/idempotencyKey.model.js";
+import CheckoutSession from "../models/checkoutSession.model.js";
+import mongoose from "mongoose";
 
 // Get the directory name of the current module
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 // Load environment variables from the root directory
-dotenv.config({ path: path.join(__dirname, '../../.env') });
+dotenv.config({ path: path.join(__dirname, "../../.env") });
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 export const createCheckoutSession = async (req, res) => {
@@ -25,6 +26,7 @@ export const createCheckoutSession = async (req, res) => {
         .status(400)
         .json({ message: "Invalid or empty products array" });
     }
+
     let totalAmount = 0;
     const lineItems = products.map((product) => {
       const amount = product.price * 100;
@@ -79,12 +81,27 @@ export const createCheckoutSession = async (req, res) => {
         address: address,
       },
     });
+
+    try {
+      await reserveProducts(products, session.id);
+    } catch (reservationError) {
+      return res.status(400).json({ message: reservationError.message });
+    }
+    // Create a record in our database to track this checkout session
+    await CheckoutSession.create({
+      sessionId: session.id,
+      userId: req.user._id,
+      status: "active",
+      expiresAt: new Date(Date.now() + 10 * 60 * 1000),
+    });
+
     if (totalAmount >= 20000) {
       await createNewCoupon(req.user._id);
     }
     res.status(200).json({ id: session.id, totalAmount: totalAmount / 100 });
   } catch (error) {
     console.log("Error in createCheckoutSession controller", error.message);
+
     return res.status(500).json({ message: error.message });
   }
 };
@@ -109,9 +126,39 @@ async function createNewCoupon(userId) {
 }
 
 export const checkoutSuccess = async (req, res) => {
+  console.log("=== CHECKOUT SUCCESS STARTED ===");
+  console.log("Session ID:", req.body.sessionId);
+
+  const { sessionId } = req.body;
+  const session = await stripe.checkout.sessions.retrieve(sessionId);
+
+  // check idempotency key
+  let idempotencyKey = await IdempotencyKey.findOne({
+    $or: [
+      { idempotencyKey: sessionId, status: "completed" },
+      {
+        idempotencyKey: sessionId,
+        status: "pending",
+        lockExpiry: { $gt: Date.now() },
+      },
+    ],
+  });
+  if (idempotencyKey) {
+    return res.status(200).json({
+      message: "Processing or completed payment session",
+    });
+  }
+  if (idempotencyKey == null) {
+    await IdempotencyKey.create({
+      idempotencyKey: sessionId,
+      status: "pending",
+      lockExpiry: Date.now() + 24 * 60 * 60 * 1000,
+    });
+  }
   try {
-    const { sessionId } = req.body;
-    const session = await stripe.checkout.sessions.retrieve(sessionId);
+    // Use a transaction to ensure all or none of the updates occur
+    const mongooseSession = await mongoose.startSession();
+    mongooseSession.startTransaction();
 
     if (session.payment_status === "paid") {
       if (session.metadata.couponCode) {
@@ -125,6 +172,9 @@ export const checkoutSuccess = async (req, res) => {
       }
     }
     const products = JSON.parse(session.metadata.products);
+    await updateProductStock(products);
+
+    // Create order only after successful stock update
     const newOrder = new Order({
       user: session.metadata.userId,
       products: products,
@@ -135,16 +185,45 @@ export const checkoutSuccess = async (req, res) => {
       phone: session.metadata.phone,
       address: session.metadata.address,
     });
-    // Update product stock
-    await updateProductStock(products);
+
+    // Save order and revert stock if order creation fails
+    console.log("Attempting to save order to MongoDB...");
     const order = await newOrder.save();
+    console.log("✓ Order saved successfully:", order._id);
+
+    await User.findByIdAndUpdate(session.metadata.userId, {
+      ShoppingBagItems: [],
+    });
+    console.log("✓ User shopping bag cleared successfully");
+
+    await CheckoutSession.findOneAndUpdate(
+      {
+        sessionId: session.id,
+        userId: req.user._id,
+        status: "active",
+      },
+      { status: "completed" }
+    );
+    await IdempotencyKey.findOneAndUpdate({
+      idempotencyKey: sessionId,
+      status: "completed",
+    });
+
+    await mongooseSession.commitTransaction();
+    mongooseSession.endSession();
+
+    console.log("=== CHECKOUT SUCCESS COMPLETED ===");
     return res.status(200).json({
       message:
         "Payment successful, order created, and coupon deactivated if used",
       orderId: order._id,
     });
   } catch (error) {
-    console.log("Error in checkoutSuccess controller", error.message);
-    return res.status(500).json({ message: error.message });
+    // Rollback on failure
+    await mongooseSession.abortTransaction();
+    mongooseSession.endSession();
+    console.error("❌ Checkout success failed and rolled back:", error.message);
+    // Re-throw the error to handle it in the calling function
+    throw new Error(`Checkout success failed: ${error.message}`);
   }
 };

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import LoadingSpinner from "./LoadingSpinner";
+import { AnalyticsSkeleton } from "./SkeletonLoader";
 import { Users, Package, ShoppingBag, DollarSign } from "lucide-react";
 import { motion } from "framer-motion";
 import axios from "../lib/axios";
@@ -40,7 +40,7 @@ const Analytics = () => {
     fetchAnalyticsData();
   }, []);
   if (isLoading) {
-    return <LoadingSpinner />;
+    return <AnalyticsSkeleton />;
   }
 
   return (
@@ -50,25 +50,25 @@ const Analytics = () => {
           title="Total Users"
           value={analyticsData.users.toLocaleString()}
           icon={Users}
-          color="from-yellow-400 to-teal-700"
+          color="from-indigo-400 to-cyan-700"
         />
         <AnalyticsCard
           title="Total Products"
           value={analyticsData.products.toLocaleString()}
           icon={Package}
-          color="from-yellow-400 to-green-700"
+          color="from-indigo-400 to-emerald-700"
         />
         <AnalyticsCard
           title="Total Sales"
           value={analyticsData.totalSales.toLocaleString()}
           icon={ShoppingBag}
-          color="from-yellow-400 to-cyan-700"
+          color="from-indigo-400 to-cyan-700"
         />
         <AnalyticsCard
           title="Total Revenue"
           value={`$${analyticsData.totalRevenue.toLocaleString()}`}
           icon={DollarSign}
-          color="from-yellow-400 to-lime-700"
+          color="from-indigo-400 to-green-600"
         />
       </div>
       <motion.div
@@ -122,8 +122,8 @@ const AnalyticsCard = ({ title, value, icon: Icon, color }) => (
         <p className="text-sm mb-1 font-semibold">{title}</p>
         <h3 className="text-3xl font-bold">{value}</h3>
       </div>
-      <div className="absolute inset-0 bg-gradient-to-br from-yellow-600 to-yellow-900 opacity-30" />
-      <div className="absolute -bottom-4 -right-4 text-yellow-800 opacity-50" />
+      <div className="absolute inset-0 bg-gradient-to-br from-indigo-600 to-indigo-900 opacity-30" />
+      <div className="absolute -bottom-4 -right-4 text-indigo-800 opacity-50" />
       <Icon className="h-32 w-32"></Icon>
     </div>
   </motion.div>

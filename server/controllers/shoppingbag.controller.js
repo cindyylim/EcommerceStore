@@ -1,5 +1,4 @@
 import Product from "../models/product.model.js";
-import mongoose from "mongoose";
 
 export const addToShoppingBag = async (req, res) => {
   try {
@@ -25,6 +24,22 @@ export const addToShoppingBag = async (req, res) => {
         return res
           .status(400)
           .json({ message: "Selected size is not available" });
+      }
+
+      // Check available stock considering locks
+      const availableQty = sizeObj.quantity - sizeObj.reserved;
+      if (availableQty < 1) {
+        return res
+          .status(400)
+          .json({ message: "Selected size is currently reserved by other customers" });
+      }
+    } else {
+      // Check available stock for non-sized products
+      const availableQty = product.quantity - product.reserved;
+      if (availableQty < 1) {
+        return res
+          .status(400)
+          .json({ message: "Product is currently reserved by other customers" });
       }
     }
 
@@ -53,11 +68,24 @@ export const addToShoppingBag = async (req, res) => {
         const productDetails = await Product.findById(item._id);
         if (!productDetails) return null;
 
+        let isAvailable = true;
+
+        if (productDetails.hasSizes && item.size) {
+          const sizeObj = productDetails.sizes.find(s => s.size === item.size);
+          if (sizeObj) {
+            const availableQty = sizeObj.quantity - sizeObj.reserved;
+            isAvailable = availableQty > 0 && sizeObj.inStock;
+          }
+        } else {
+          const availableQty = productDetails.quantity - productDetails.reserved;
+          isAvailable = availableQty > 0 && productDetails.inStock;
+        }
+
         return {
           ...productDetails.toJSON(),
           quantity: item.quantity,
           selectedSize: item.size,
-          isAvailable: true,
+          isAvailable: isAvailable,
         };
       })
     );
@@ -90,11 +118,24 @@ export const removeAllFromShoppingBag = async (req, res) => {
         const productDetails = await Product.findById(item._id);
         if (!productDetails) return null;
 
+        let isAvailable = true;
+
+        if (productDetails.hasSizes && item.size) {
+          const sizeObj = productDetails.sizes.find(s => s.size === item.size);
+          if (sizeObj) {
+            const availableQty = sizeObj.quantity - sizeObj.reserved;
+            isAvailable = availableQty > 0 && sizeObj.inStock;
+          }
+        } else {
+          const availableQty = productDetails.quantity - productDetails.reserved;
+          isAvailable = availableQty > 0 && productDetails.inStock;
+        }
+
         return {
           ...productDetails.toJSON(),
           quantity: item.quantity,
           selectedSize: item.size,
-          isAvailable: true,
+          isAvailable: isAvailable,
         };
       })
     );
@@ -121,6 +162,33 @@ export const updateQuantity = async (req, res) => {
       );
 
       if (existingItem) {
+        // If increasing quantity, check stock availability
+        if (quantity > existingItem.quantity) {
+          const product = await Product.findById(productId);
+          if (!product) {
+            return res.status(404).json({ message: "Product not found" });
+          }
+
+          if (product.hasSizes) {
+            const sizeObj = product.sizes.find(s => s.size === size);
+            if (!sizeObj) {
+              return res.status(400).json({ message: "Size not found" });
+            }
+            const availableQty = sizeObj.quantity - sizeObj.reserved;
+            if (availableQty < quantity) {
+              return res.status(400).json({
+                message: `Cannot increase quantity. Only ${availableQty} available (some are reserved).`
+              });
+            }
+          } else {
+            const availableQty = product.quantity - product.reserved;
+            if (availableQty < quantity) {
+              return res.status(400).json({
+                message: `Cannot increase quantity. Only ${availableQty} available (some are reserved).`
+              });
+            }
+          }
+        }
         existingItem.quantity = quantity;
       } else {
         return res
@@ -130,17 +198,30 @@ export const updateQuantity = async (req, res) => {
     }
 
     await user.save();
-     // Return full product details with size information
-     const shoppingBagWithDetails = await Promise.all(
+    // Return full product details with size information
+    const shoppingBagWithDetails = await Promise.all(
       user.ShoppingBagItems.map(async (item) => {
         const productDetails = await Product.findById(item._id);
         if (!productDetails) return null;
+
+        let isAvailable = true;
+
+        if (productDetails.hasSizes && item.size) {
+          const sizeObj = productDetails.sizes.find(s => s.size === item.size);
+          if (sizeObj) {
+            const availableQty = sizeObj.quantity - sizeObj.reserved;
+            isAvailable = availableQty > 0 && sizeObj.inStock;
+          }
+        } else {
+          const availableQty = productDetails.quantity - productDetails.reserved;
+          isAvailable = availableQty > 0 && productDetails.inStock;
+        }
 
         return {
           ...productDetails.toJSON(),
           quantity: item.quantity,
           selectedSize: item.size,
-          isAvailable: true,
+          isAvailable: isAvailable,
         };
       })
     );
@@ -171,6 +252,7 @@ export const getShoppingBagProducts = async (req, res) => {
           };
         }
 
+
         // Get the specific size object for the selected size
         const selectedSizeDetails =
           product.hasSizes && item.size
@@ -199,7 +281,19 @@ export const getShoppingBagProducts = async (req, res) => {
             };
           }
 
-          if (!selectedSizeDetails.inStock) {
+          const availableQty = selectedSizeDetails.quantity - selectedSizeDetails.reserved;
+
+          if (availableQty <= 0 && selectedSizeDetails.quantity > 0) {
+            // Physically in stock but fully reserved
+            return {
+              ...baseProduct,
+              isAvailable: false,
+              errorMessage: "Size is currently reserved by others",
+              shouldRemove: false, // Don't auto-remove, just mark unavailable
+            };
+          }
+
+          if (!selectedSizeDetails.inStock || selectedSizeDetails.quantity === 0) {
             return {
               ...baseProduct,
               isAvailable: false,
@@ -208,27 +302,51 @@ export const getShoppingBagProducts = async (req, res) => {
             };
           }
 
-          if (selectedSizeDetails.quantity < item.quantity) {
+          if (availableQty < item.quantity) {
             return {
               ...baseProduct,
               isAvailable: false,
-              errorMessage: "Not enough stock available",
-              maxQuantity: selectedSizeDetails.quantity,
+              errorMessage: "Not enough stock available (some reserved)",
+              maxQuantity: availableQty,
+              shouldAdjustQuantity: true,
+            };
+          }
+        } else {
+          // Non-sized product checks
+          const availableQty = product.quantity - product.reserved;
+
+          if (availableQty <= 0 && product.quantity > 0) {
+            return {
+              ...baseProduct,
+              isAvailable: false,
+              errorMessage: "Product is currently reserved by others",
+              shouldRemove: false,
+            };
+          }
+
+          if (availableQty < item.quantity) {
+            return {
+              ...baseProduct,
+              isAvailable: false,
+              errorMessage: "Not enough stock available (some reserved)",
+              maxQuantity: availableQty,
               shouldAdjustQuantity: true,
             };
           }
         }
 
         // Product is available
+        const realAvailableQty = product.hasSizes
+          ? selectedSizeDetails.quantity - selectedSizeDetails.reserved
+          : product.quantity - product.reserved;
+
         return {
           ...baseProduct,
           isAvailable: true,
-          maxQuantity: selectedSizeDetails
-            ? selectedSizeDetails.quantity
-            : null,
+          maxQuantity: realAvailableQty,
           stockWarning:
-            selectedSizeDetails && selectedSizeDetails.quantity <= 5
-              ? `Only ${selectedSizeDetails.quantity} left in stock`
+            realAvailableQty <= 5
+              ? `Only ${realAvailableQty} left in stock`
               : null,
         };
       })
@@ -240,3 +358,4 @@ export const getShoppingBagProducts = async (req, res) => {
     return res.status(500).json({ message: error.message });
   }
 };
+

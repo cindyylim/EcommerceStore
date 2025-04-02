@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useShoppingBagStore } from "../stores/useShoppingBagStore";
 import { motion } from "framer-motion";
 import ShoppingBagItem from "../components/ShoppingBagItem";
@@ -7,8 +7,25 @@ import { ShoppingCart } from "lucide-react";
 import { Link } from "react-router-dom";
 import OrderSummary from "../components/OrderSummary";
 import GiftCouponCard from "../components/GiftCouponCard";
+import axios from "../lib/axios";
 const ShoppingBagPage = () => {
-  const { shoppingBag } = useShoppingBagStore();
+  const { shoppingBag, getShoppingBagItems } = useShoppingBagStore();
+  
+  // Clean up expired locks when user visits shopping bag
+  useEffect(() => {
+    const cleanupExpiredLocks = async () => {
+      try {
+        await axios.post('/api/shoppingbag/cleanup-expired-locks');
+        // Refresh shopping bag items after cleanup
+        await getShoppingBagItems();
+      } catch (error) {
+        console.error('Error cleaning up expired locks:', error);
+      }
+    };
+    
+    cleanupExpiredLocks();
+  }, [getShoppingBagItems]);
+  
   return (
     <div className="py-8 md:py-16">
       <div className="mx-auto max-w-screen-3xl px-4 2xl:px-0">
@@ -65,7 +82,7 @@ const EmptyShoppingBagUI = () => (
       Looks like you {"haven't"} added anything to your shopping bag yet.
     </p>
     <Link
-      className="mt-4 rounded-md bg-yellow-500 px-6 py-2  transition-colors hover:bg-yellow-600"
+      className="mt-4 rounded-md bg-indigo-500 px-6 py-2  transition-colors hover:bg-indigo-600"
       to="/"
     >
       Start Shopping

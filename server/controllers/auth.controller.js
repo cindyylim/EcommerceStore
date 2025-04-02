@@ -107,16 +107,25 @@ export const login = async (req, res) => {
 export const logout = async (req, res) => {
   try {
     const refreshToken = req.cookies.refreshToken;
-    if (!refreshToken) {
-      return res.status(401).json({ message: "Unauthorized" });
-    }
-    const decodedToken = jwt.verify(
-      refreshToken,
-      process.env.REFRESH_TOKEN_SECRET
-    );
-    await redis.del(`refresh_token${decodedToken.userId}`);
+
+    // Always clear cookies, even if token is invalid or missing
     res.clearCookie("refreshToken");
     res.clearCookie("accessToken");
+
+    // If refresh token exists, try to delete it from Redis
+    if (refreshToken) {
+      try {
+        const decodedToken = jwt.verify(
+          refreshToken,
+          process.env.REFRESH_TOKEN_SECRET
+        );
+        await redis.del(`refresh_token${decodedToken.userId}`);
+      } catch (error) {
+        // Token is invalid/expired, but that's okay - we already cleared cookies
+        console.log("Refresh token verification failed during logout (expected if expired):", error.message);
+      }
+    }
+
     return res.status(200).json({ message: "Logout successful" });
   } catch (error) {
     console.log("Error in logout controller", error.message);
@@ -155,7 +164,7 @@ export const refreshToken = async (req, res) => {
 export const getProfile = async (req, res) => {
   try {
     return res.status(200).json(req.user);
-  } catch (error) { 
+  } catch (error) {
     console.log("Error in getProfile controller", error.message);
     return res.status(500).json({ message: error.message });
   }

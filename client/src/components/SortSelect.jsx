@@ -31,7 +31,7 @@ const SortSelect = () => {
         id="sort"
         value={currentSort}
         onChange={handleSortChange}
-        className="block w-full rounded-md border-gray-300 shadow-sm focus:border-yellow-400 focus:ring-yellow-400 sm:text-sm"
+        className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-400 focus:ring-indigo-400 sm:text-sm"
       >
         <option value="newest">Newest First</option>
         <option value="featured">Featured</option>

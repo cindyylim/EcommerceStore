@@ -1,10 +1,11 @@
-import React, { useState, useEffect } from "react";
+import { useState } from "react";
 import { useShoppingBagStore } from "../stores/useShoppingBagStore";
 import { loadStripe } from "@stripe/stripe-js";
 import axios from "../lib/axios";
+import { toast } from "react-hot-toast";
 
 const stripePromise = loadStripe(
-  "pk_test_51R5VjHIm1NY2Sep6AZLPbAzXDMLaoNbENv7RXWQjDh8XeKFW5yxdX1y0qLWunTamRiqhoS05537tIiEJSoWfNhu600CChUjzSU"
+  import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY
 );
 
 const OrderSummary = () => {
@@ -28,11 +29,13 @@ const OrderSummary = () => {
 
   // Calculate shipping cost
   const shippingCost = selectedShipping === "standard" ? 15 : 20;
-  const disabled = shoppingBag.some(item => !item.isAvailable);
   // Calculate final total with shipping
   formattedTotal = Number(formattedTotal) + shippingCost;
   const taxes = Number(formattedTotal) * 0.12;
   const finalTotal = Number(formattedTotal) + taxes;
+
+  // Check if there are unavailable items in the shopping bag
+  const hasUnavailableItems = shoppingBag && shoppingBag.some(item => item.isAvailable === false);
 
   const handleShippingChange = (event) => {
     setSelectedShipping(event.target.value);
@@ -40,6 +43,13 @@ const OrderSummary = () => {
 
   const handlePayment = async (e) => {
     e.preventDefault();
+    
+    // Check for unavailable items before proceeding
+    if (hasUnavailableItems) {
+      toast.error("Please remove unavailable items from your cart before proceeding to checkout");
+      return;
+    }
+    
     if (!shippingInfo.firstName) {
       alert("First name is required");
       return;
@@ -65,26 +75,29 @@ const OrderSummary = () => {
       alert("Phone number is required");
       return;
     }
+
     const stripe = await stripePromise;
-    const res = await axios.post("/api/payments/create-checkout-session", {
-      products: shoppingBag,
-      coupon: coupon ? coupon.code : null,
-      name: shippingInfo.firstName + " " + shippingInfo.lastName,
-      email: shippingInfo.email,
-      phone: shippingInfo.phone,
-      address:
-        shippingInfo.address +
-        ", " +
-        shippingInfo.city +
-        ", " +
-        shippingInfo.province +
-        ", " +
-        shippingInfo.postalCode,
-    });
-    const session = res.data;
-    const result = await stripe.redirectToCheckout({ sessionId: session.id });
-    if (result.error) {
-      console.error("Error: ", result.error);
+    try {
+      const res = await axios.post("/api/payments/create-checkout-session", {
+        products: shoppingBag,
+        couponCode: coupon ? coupon.code : null,
+        name: shippingInfo.firstName + " " + shippingInfo.lastName,
+        email: shippingInfo.email,
+        phone: shippingInfo.phone,
+        address:
+          shippingInfo.address +
+          ", " +
+          shippingInfo.city +
+          ", " +
+          shippingInfo.province +
+          ", " +
+          shippingInfo.postalCode,
+      });
+
+      const session = res.data;
+      await stripe.redirectToCheckout({ sessionId: session.id });
+    } catch (error) {
+      toast.error("Error: " + error?.response?.data?.message);
     }
   };
   return (
@@ -334,10 +347,14 @@ const OrderSummary = () => {
         />
         <button
           onClick={handlePayment}
-          disabled={disabled}
-          className="w-full py-3 bg-green-600 text-white px-6 rounded-lg hover:bg-green-800 transition-colors mt-4 disabled:bg-gray-300 disabled:cursor-not-allowed"
+          disabled={hasUnavailableItems}
+          className={`w-full py-3 text-white px-6 rounded-lg transition-colors mt-4 ${
+            hasUnavailableItems
+              ? 'bg-gray-400 cursor-not-allowed'
+              : 'bg-green-600 hover:bg-green-800'
+          }`}
         >
-          Proceed to Payment
+          {hasUnavailableItems ? 'Remove Unavailable Items' : 'Proceed to Payment'}
         </button>
       </form>
     </div>

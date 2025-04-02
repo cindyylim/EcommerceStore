@@ -5,13 +5,13 @@ import { Star, Trash, Ruler } from "lucide-react";
 import SizeManager from "./SizeManager";
 
 const ProductList = () => {
-  const { deleteProduct, toggleFeaturedProduct, products, updateProduct } = useProductStore();
+  const { deleteProduct, toggleFeaturedProduct, products, setProducts} = useProductStore();
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [showSizeManager, setShowSizeManager] = useState(false);
 
   const handleSizeUpdate = (productId, updatedProduct) => {
-    updateProduct(productId, updatedProduct);
     setShowSizeManager(false);
+    setProducts(products.map(product => product._id === productId ? updatedProduct : product));
   };
 
   return (
@@ -55,12 +55,6 @@ const ProductList = () => {
               >
                 Sizes
               </th>
-              <th
-                scope="col"
-                className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider"
-              >
-                Actions
-              </th>
             </tr>
           </thead>
           <tbody className="divide-y">
@@ -95,7 +89,7 @@ const ProductList = () => {
                     onClick={() => toggleFeaturedProduct(product._id)}
                     className={`p-1 rounded-full ${
                       product.isFeatured
-                        ? "bg-yellow-400 text-gray-900"
+                        ? "bg-indigo-400 text-gray-900"
                         : "bg-gray-600 text-gray-300"
                     }`}
                   >
@@ -114,7 +108,7 @@ const ProductList = () => {
                         setSelectedProduct(product);
                         setShowSizeManager(true);
                       }}
-                      className="text-yellow-600 hover:text-yellow-700"
+                      className="text-indigo-600 hover:text-indigo-700"
                     >
                       <Ruler className="h-5 w-5" />
                     </button>

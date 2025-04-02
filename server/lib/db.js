@@ -2,6 +2,7 @@ import mongoose from "mongoose";
 import dotenv from "dotenv";
 import path from "path";
 import { fileURLToPath } from "url";
+import { createAllIndexes } from "../utils/createIndexes.js";
 
 // Get the directory name of the current module
 const __filename = fileURLToPath(import.meta.url);
@@ -13,7 +14,7 @@ dotenv.config({ path: path.join(__dirname, '../../.env') });
 export const connectDB = async () => {
   try {
     const mongoURI = process.env.MONGO_URI;
-    
+
     if (!mongoURI) {
       console.error('Environment variables loaded:', {
         envPath: path.join(__dirname, '../../.env'),
@@ -26,6 +27,10 @@ export const connectDB = async () => {
     const conn = await mongoose.connect(mongoURI);
 
     console.log(`MongoDB Connected: ${conn.connection.host}`);
+
+    // Create database indexes for all collections
+    await createAllIndexes();
+
     return conn;
   } catch (error) {
     console.error('MongoDB connection error details:', {
