@@ -5,13 +5,13 @@ import { Star, Trash, Ruler } from "lucide-react";
 import SizeManager from "./SizeManager";
 
 const ProductList = () => {
-  const { deleteProduct, toggleFeaturedProduct, products, updateProduct } = useProductStore();
+  const { deleteProduct, toggleFeaturedProduct, products, setProducts} = useProductStore();
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [showSizeManager, setShowSizeManager] = useState(false);
 
   const handleSizeUpdate = (productId, updatedProduct) => {
-    updateProduct(productId, updatedProduct);
     setShowSizeManager(false);
+    setProducts(products.map(product => product._id === productId ? updatedProduct : product));
   };
 
   return (
@@ -54,12 +54,6 @@ const ProductList = () => {
                 className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider"
               >
                 Sizes
-              </th>
-              <th
-                scope="col"
-                className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider"
-              >
-                Actions
               </th>
             </tr>
           </thead>
