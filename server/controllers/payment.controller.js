@@ -9,6 +9,7 @@ import { fileURLToPath } from "url";
 import IdempotencyKey from "../models/idempotencyKey.model.js";
 import CheckoutSession from "../models/checkoutSession.model.js";
 import mongoose from "mongoose";
+import { executeBatchedBulkWrite } from "../utils/bulkOperationHelper.js";
 
 // Get the directory name of the current module
 const __filename = fileURLToPath(import.meta.url);
@@ -172,7 +173,7 @@ export const checkoutSuccess = async (req, res) => {
       }
     }
     const products = JSON.parse(session.metadata.products);
-    await updateProductStock(products);
+    await updateProductStock(products, null, mongooseSession);
 
     // Create order only after successful stock update
     const newOrder = new Order({
@@ -210,7 +211,6 @@ export const checkoutSuccess = async (req, res) => {
     });
 
     await mongooseSession.commitTransaction();
-    mongooseSession.endSession();
 
     console.log("=== CHECKOUT SUCCESS COMPLETED ===");
     return res.status(200).json({
@@ -221,9 +221,10 @@ export const checkoutSuccess = async (req, res) => {
   } catch (error) {
     // Rollback on failure
     await mongooseSession.abortTransaction();
-    mongooseSession.endSession();
     console.error("❌ Checkout success failed and rolled back:", error.message);
     // Re-throw the error to handle it in the calling function
     throw new Error(`Checkout success failed: ${error.message}`);
+  } finally {
+    mongooseSession.endSession();
   }
 };

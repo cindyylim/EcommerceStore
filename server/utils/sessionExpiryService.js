@@ -4,6 +4,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import CheckoutSession from '../models/checkoutSession.model.js';
 import Product from '../models/product.model.js';
+import { executeBatchedBulkWrite } from './bulkOperationHelper.js';
 // Get the directory name of the current module
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -322,7 +323,7 @@ export const expireCheckoutSessions = async () => {
         return updateOperation;
       });
     
-      const bulkResult = await Product.bulkWrite(bulkOps);
+      const bulkResult = await executeBatchedBulkWrite(bulkOps, null, Product);
       console.log(
         `✅ Removed reservations from ${bulkResult.modifiedCount} products for expired session ${sessionId}`
       );

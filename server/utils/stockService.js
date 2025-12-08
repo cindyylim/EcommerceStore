@@ -1,5 +1,6 @@
 import Product from "../models/product.model.js";
 import mongoose from "mongoose";
+import { executeBatchedBulkWrite } from "./bulkOperationHelper.js";
 
 export const updateProductStock = async (
   products,
@@ -128,9 +129,7 @@ export const updateProductStock = async (
     return updateOperation;
   });
 
-  const bulkResult = await Product.bulkWrite(bulkOps, {
-    session: mongooseSession,
-  });
+  const bulkResult = await executeBatchedBulkWrite(bulkOps, mongooseSession, Product);
 
   console.log(
     `✅ Bulk write successful! Modified ${bulkResult.modifiedCount} documents.`
@@ -331,10 +330,8 @@ export const reserveProducts = async (products, sessionId) => {
     return updateOperation;
   });
 
-  // Execute the bulk write
-  const bulkResult = await Product.bulkWrite(bulkOps, {
-    session: mongooseSession,
-  });
+  // Execute the bulk write using batched operations
+  const bulkResult = await executeBatchedBulkWrite(bulkOps, mongooseSession, Product);
 
   try {
     // Check if all products were successfully reserved before committing
