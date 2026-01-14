@@ -156,9 +156,9 @@ export const checkoutSuccess = async (req, res) => {
       lockExpiry: Date.now() + 24 * 60 * 60 * 1000,
     });
   }
+  // Use a transaction to ensure all or none of the updates occur
+  const mongooseSession = await mongoose.startSession();
   try {
-    // Use a transaction to ensure all or none of the updates occur
-    const mongooseSession = await mongoose.startSession();
     mongooseSession.startTransaction();
 
     if (session.payment_status === "paid") {

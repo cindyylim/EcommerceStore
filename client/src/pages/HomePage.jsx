@@ -4,16 +4,10 @@ import FeaturedProducts from "../components/FeaturedProducts";
 import { useProductStore } from "../stores/useProductStore";
 
 const categories = [
-  { href: "/jeans", name: "Jeans", imageUrl: "/jeans.jpg" },
-  { href: "/tshirts", name: "T-shirts", imageUrl: "/tshirts.jpg" },
-  { href: "/shoes", name: "Shoes", imageUrl: "/shoes.jpg" },
-  { href: "/glasses", name: "Glasses", imageUrl: "/glasses.jpg" },
   { href: "/jackets", name: "Jackets", imageUrl: "/jackets.jpg" },
-  { href: "/suits", name: "Suits", imageUrl: "/suits.jpg" },
-  { href: "/bags", name: "Bags", imageUrl: "/bags.jpg" },
 ];
 const HomePage = () => {
-  const {fetchFeaturedProducts, products, isLoading} = useProductStore();
+  const { fetchFeaturedProducts, products, isLoading } = useProductStore();
   useEffect(() => {
     fetchFeaturedProducts();
   }, [fetchFeaturedProducts])
@@ -24,7 +18,7 @@ const HomePage = () => {
           Explore Our Categories
         </h1>
         <p className="text-center text-xl mb-12">
-          Discover the latest trends in eco-friendly fashion
+          Shop the latest trends
         </p>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {categories.map((category) => (

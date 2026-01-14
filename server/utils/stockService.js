@@ -71,7 +71,7 @@ export const updateProductStock = async (
             // Calculate the total product quantity (sum of all available stock sizes)
             quantity: { $sum: "$sizes.quantity" },
             // Calculate the total reserved count (sum of all reserved sizes)
-            reserved: { $sum: [$ifNull[("$sizes.reserved", 0)]] },
+            reserved: { $sum: "$sizes.reserved" },
             // Check if ANY size variant has quantity > 0
             inStock: { $gt: [{ $sum: "$sizes.quantity" }, 0] },
           },
@@ -212,7 +212,7 @@ export const reserveProducts = async (products, sessionId) => {
         },
         {
           $set: {
-            reserved: { $sum: [$ifNull[("$sizes.reserved", 0)]] },
+            reserved: { $sum: "$sizes.reserved" },
           },
         },
       ];
