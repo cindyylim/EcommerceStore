@@ -25,26 +25,24 @@ export const executeBatchedBulkWrite = async (bulkOps, session, model) => {
   for (let i = 0; i < bulkOps.length; i += BATCH_SIZE) {
     const batch = bulkOps.slice(i, i + BATCH_SIZE);
     results.batchCount++;
-    
+
     try {
       const batchResult = await model.bulkWrite(batch, {
         session: session
       });
-      
+
       // Accumulate results
       results.modifiedCount += batchResult.modifiedCount;
       results.insertedCount += batchResult.insertedCount;
       results.upsertedCount += batchResult.upsertedCount;
       results.deletedCount += batchResult.deletedCount;
       results.matchedCount += batchResult.matchedCount;
-      
-      console.log(`✅ Batch ${results.batchCount} successful! Modified ${batchResult.modifiedCount} documents.`);
+
     } catch (error) {
       console.error(`❌ Batch ${results.batchCount} failed:`, error);
       throw new Error(`Bulk operation failed in batch ${results.batchCount}: ${error.message}`);
     }
   }
 
-  console.log(`✅ All ${results.batchCount} batches completed! Total modified documents: ${results.modifiedCount}`);
   return results;
 };

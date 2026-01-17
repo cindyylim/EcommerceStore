@@ -1,0 +1,252 @@
+
+> e-commerce-store@1.0.0 test
+> node --experimental-vm-modules node_modules/jest/bin/jest.js --detectOpenHandles server/tests/payment.concurrency.test.js
+
+(node:58260) ExperimentalWarning: VM Modules is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+  console.log
+    Mock MongoDB connected
+
+      at connectDB (tests/setup.js:14:17)
+
+  console.log
+    [session_user_1] Starting transaction
+
+      at reserveProducts (utils/stockService.js:142:11)
+          at async Promise.allSettled (index 0)
+
+  console.log
+    [session_user_2] Starting transaction
+
+      at reserveProducts (utils/stockService.js:142:11)
+          at async Promise.allSettled (index 1)
+
+  console.log
+    ✅ Batch 1 successful! Modified 1 documents.
+
+      at executeBatchedBulkWrite (utils/bulkOperationHelper.js:41:15)
+          at async Promise.allSettled (index 1)
+
+  console.log
+    ✅ All 1 batches completed! Total modified documents: 1
+
+      at executeBatchedBulkWrite (utils/bulkOperationHelper.js:48:11)
+          at async Promise.allSettled (index 1)
+
+  console.log
+    [session_user_2] Bulk Result: {"modifiedCount":1,"insertedCount":0,"upsertedCount":0,"deletedCount":0,"matchedCount":1,"batchCount":1}
+
+      at reserveProducts (utils/stockService.js:336:11)
+          at async Promise.allSettled (index 1)
+
+  console.error
+    ❌ Batch 1 failed: MongoBulkWriteError: WriteConflict error: this operation conflicted with another operation. Please retry your operation or multi-document transaction.
+        at executeCommands (/Users/cindy/workspace/E-Commerce store/server/node_modules/mongodb/src/bulk/common.ts:578:15)
+        at processTicksAndRejections (node:internal/process/task_queues:105:5)
+        at BulkWriteShimOperation.execute (/Users/cindy/workspace/E-Commerce store/server/node_modules/mongodb/src/bulk/common.ts:882:12)
+        at tryOperation (/Users/cindy/workspace/E-Commerce store/server/node_modules/mongodb/src/operations/execute_operation.ts:283:14)
+        at executeOperation (/Users/cindy/workspace/E-Commerce store/server/node_modules/mongodb/src/operations/execute_operation.ts:115:12)
+        at OrderedBulkOperation.execute (/Users/cindy/workspace/E-Commerce store/server/node_modules/mongodb/src/bulk/common.ts:1211:12)
+        at BulkWriteOperation.execute (/Users/cindy/workspace/E-Commerce store/server/node_modules/mongodb/src/operations/bulk_write.ts:60:12)
+        at tryOperation (/Users/cindy/workspace/E-Commerce store/server/node_modules/mongodb/src/operations/execute_operation.ts:283:14)
+        at executeOperation (/Users/cindy/workspace/E-Commerce store/server/node_modules/mongodb/src/operations/execute_operation.ts:115:12)
+        at Collection.bulkWrite (/Users/cindy/workspace/E-Commerce store/server/node_modules/mongodb/src/collection.ts:344:12)
+        at Function.bulkWrite (/Users/cindy/workspace/E-Commerce store/server/node_modules/mongoose/lib/model.js:3417:13)
+        at executeBatchedBulkWrite (/Users/cindy/workspace/E-Commerce store/server/utils/bulkOperationHelper.js:30:27)
+        at reserveProducts (/Users/cindy/workspace/E-Commerce store/server/utils/stockService.js:335:22)
+        at async Promise.allSettled (index 0)
+        at Object.<anonymous> (/Users/cindy/workspace/E-Commerce store/server/tests/payment.concurrency.test.js:44:25) {
+      errorLabelSet: Set(1) { 'TransientTransactionError' },
+      errorResponse: {
+        errorLabels: [ 'TransientTransactionError' ],
+        ok: 0,
+        errmsg: 'WriteConflict error: this operation conflicted with another operation. Please retry your operation or multi-document transaction.',
+        code: 112,
+        codeName: 'WriteConflict',
+        '$clusterTime': {
+          clusterTime: new Timestamp({ t: 1768624070, i: 17 }),
+          signature: [Object]
+        },
+        operationTime: new Timestamp({ t: 1768624070, i: 17 })
+      },
+      ok: 0,
+      code: 112,
+      codeName: 'WriteConflict',
+      '$clusterTime': {
+        clusterTime: new Timestamp({ t: 1768624070, i: 17 }),
+        signature: {
+          hash: Binary.createFromBase64('AAAAAAAAAAAAAAAAAAAAAAAAAAA=', 0),
+          keyId: 0
+        }
+      },
+      operationTime: new Timestamp({ t: 1768624070, i: 17 }),
+      writeErrors: [],
+      result: BulkWriteResult {
+        insertedCount: 0,
+        matchedCount: 0,
+        modifiedCount: 0,
+        deletedCount: 0,
+        upsertedCount: 0,
+        upsertedIds: {},
+        insertedIds: {}
+      }
+    }
+
+      41 |       console.log(`✅ Batch ${results.batchCount} successful! Modified ${batchResult.modifiedCount} documents.`);
+      42 |     } catch (error) {
+    > 43 |       console.error(`❌ Batch ${results.batchCount} failed:`, error);
+         |               ^
+      44 |       throw new Error(`Bulk operation failed in batch ${results.batchCount}: ${error.message}`);
+      45 |     }
+      46 |   }
+
+      at executeBatchedBulkWrite (utils/bulkOperationHelper.js:43:15)
+      at reserveProducts (utils/stockService.js:335:22)
+          at async Promise.allSettled (index 0)
+      at Object.<anonymous> (tests/payment.concurrency.test.js:44:25)
+
+  console.log
+    ✅ Bulk write successful! Modified 1 documents.
+
+      at reserveProducts (utils/stockService.js:346:13)
+          at async Promise.allSettled (index 1)
+
+  console.log
+    Fulfilled: 1 Rejected: 1
+
+      at Object.<anonymous> (tests/payment.concurrency.test.js:53:17)
+
+  console.log
+    [session_user_shoes_1] Starting transaction
+
+      at reserveProducts (utils/stockService.js:142:11)
+          at async Promise.allSettled (index 0)
+
+  console.log
+    [session_user_shoes_2] Starting transaction
+
+      at reserveProducts (utils/stockService.js:142:11)
+          at async Promise.allSettled (index 1)
+
+  console.log
+    ✅ Batch 1 successful! Modified 1 documents.
+
+      at executeBatchedBulkWrite (utils/bulkOperationHelper.js:41:15)
+          at async Promise.allSettled (index 1)
+
+  console.log
+    ✅ All 1 batches completed! Total modified documents: 1
+
+      at executeBatchedBulkWrite (utils/bulkOperationHelper.js:48:11)
+          at async Promise.allSettled (index 1)
+
+  console.log
+    [session_user_shoes_2] Bulk Result: {"modifiedCount":1,"insertedCount":0,"upsertedCount":0,"deletedCount":0,"matchedCount":1,"batchCount":1}
+
+      at reserveProducts (utils/stockService.js:336:11)
+          at async Promise.allSettled (index 1)
+
+  console.error
+    ❌ Batch 1 failed: MongoBulkWriteError: WriteConflict error: this operation conflicted with another operation. Please retry your operation or multi-document transaction.
+        at executeCommands (/Users/cindy/workspace/E-Commerce store/server/node_modules/mongodb/src/bulk/common.ts:578:15)
+        at processTicksAndRejections (node:internal/process/task_queues:105:5)
+        at BulkWriteShimOperation.execute (/Users/cindy/workspace/E-Commerce store/server/node_modules/mongodb/src/bulk/common.ts:882:12)
+        at tryOperation (/Users/cindy/workspace/E-Commerce store/server/node_modules/mongodb/src/operations/execute_operation.ts:283:14)
+        at executeOperation (/Users/cindy/workspace/E-Commerce store/server/node_modules/mongodb/src/operations/execute_operation.ts:115:12)
+        at OrderedBulkOperation.execute (/Users/cindy/workspace/E-Commerce store/server/node_modules/mongodb/src/bulk/common.ts:1211:12)
+        at BulkWriteOperation.execute (/Users/cindy/workspace/E-Commerce store/server/node_modules/mongodb/src/operations/bulk_write.ts:60:12)
+        at tryOperation (/Users/cindy/workspace/E-Commerce store/server/node_modules/mongodb/src/operations/execute_operation.ts:283:14)
+        at executeOperation (/Users/cindy/workspace/E-Commerce store/server/node_modules/mongodb/src/operations/execute_operation.ts:115:12)
+        at Collection.bulkWrite (/Users/cindy/workspace/E-Commerce store/server/node_modules/mongodb/src/collection.ts:344:12)
+        at Function.bulkWrite (/Users/cindy/workspace/E-Commerce store/server/node_modules/mongoose/lib/model.js:3417:13)
+        at executeBatchedBulkWrite (/Users/cindy/workspace/E-Commerce store/server/utils/bulkOperationHelper.js:30:27)
+        at reserveProducts (/Users/cindy/workspace/E-Commerce store/server/utils/stockService.js:335:22)
+        at async Promise.allSettled (index 0)
+        at Object.<anonymous> (/Users/cindy/workspace/E-Commerce store/server/tests/payment.concurrency.test.js:127:25) {
+      errorLabelSet: Set(1) { 'TransientTransactionError' },
+      errorResponse: {
+        errorLabels: [ 'TransientTransactionError' ],
+        ok: 0,
+        errmsg: 'WriteConflict error: this operation conflicted with another operation. Please retry your operation or multi-document transaction.',
+        code: 112,
+        codeName: 'WriteConflict',
+        '$clusterTime': {
+          clusterTime: new Timestamp({ t: 1768624070, i: 20 }),
+          signature: [Object]
+        },
+        operationTime: new Timestamp({ t: 1768624070, i: 20 })
+      },
+      ok: 0,
+      code: 112,
+      codeName: 'WriteConflict',
+      '$clusterTime': {
+        clusterTime: new Timestamp({ t: 1768624070, i: 20 }),
+        signature: {
+          hash: Binary.createFromBase64('AAAAAAAAAAAAAAAAAAAAAAAAAAA=', 0),
+          keyId: 0
+        }
+      },
+      operationTime: new Timestamp({ t: 1768624070, i: 20 }),
+      writeErrors: [],
+      result: BulkWriteResult {
+        insertedCount: 0,
+        matchedCount: 0,
+        modifiedCount: 0,
+        deletedCount: 0,
+        upsertedCount: 0,
+        upsertedIds: {},
+        insertedIds: {}
+      }
+    }
+
+      41 |       console.log(`✅ Batch ${results.batchCount} successful! Modified ${batchResult.modifiedCount} documents.`);
+      42 |     } catch (error) {
+    > 43 |       console.error(`❌ Batch ${results.batchCount} failed:`, error);
+         |               ^
+      44 |       throw new Error(`Bulk operation failed in batch ${results.batchCount}: ${error.message}`);
+      45 |     }
+      46 |   }
+
+      at executeBatchedBulkWrite (utils/bulkOperationHelper.js:43:15)
+      at reserveProducts (utils/stockService.js:335:22)
+          at async Promise.allSettled (index 0)
+      at Object.<anonymous> (tests/payment.concurrency.test.js:127:25)
+
+  console.log
+    ✅ Bulk write successful! Modified 1 documents.
+
+      at reserveProducts (utils/stockService.js:346:13)
+          at async Promise.allSettled (index 1)
+
+  console.log
+    Mock MongoDB disconnected
+
+      at disconnectDB (tests/setup.js:30:17)
+
+FAIL tests/payment.concurrency.test.js
+  Concurrency Payment Tests
+    ✕ should prevent double booking when two users try to buy the last item simultaneously (146 ms)
+    ✓ should prevent double booking for SIZED products (41 ms)
+
+  ● Concurrency Payment Tests › should prevent double booking when two users try to buy the last item simultaneously
+
+    expect(received).toMatch(expected)
+
+    Expected pattern: /could not be reserved|insufficient stock/i
+    Received string:  "Bulk operation failed in batch 1: WriteConflict error: this operation conflicted with another operation. Please retry your operation or multi-document transaction."
+
+      65 |         // Verify the error message for the rejected one (optional but good)
+      66 |         if (rejected.length > 0) {
+    > 67 |             expect(rejected[0].reason.message).toMatch(
+         |                                                ^
+      68 |                 /could not be reserved|insufficient stock/i
+      69 |             );
+      70 |         }
+
+      at Object.<anonymous> (tests/payment.concurrency.test.js:67:48)
+
+Test Suites: 1 failed, 1 total
+Tests:       1 failed, 1 passed, 2 total
+Snapshots:   0 total
+Time:        3.1 s, estimated 4 s
+Ran all test suites matching /server\/tests\/payment.concurrency.test.js/i.
