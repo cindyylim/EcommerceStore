@@ -20,7 +20,7 @@ export const validateCoupon = async (req, res) => {
     const coupon = await Coupon.findOne({
       code: code,
       userId: new mongoose.Types.ObjectId(req.user._id),
-      isActive: true,
+      isActive: true
     });
     if (!coupon) {
       return res.status(404).json({ message: "Coupon not found" });

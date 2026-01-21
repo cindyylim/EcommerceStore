@@ -8,9 +8,11 @@ export const updateProductStock = async (
   mongooseSession
 ) => {
   const bulkOps = products.map((item) => {
+    const productId = item.id || item._id;
+
     const updateOperation = {
       updateOne: {
-        filter: { _id: item._id },
+        filter: { _id: productId },
         update: [], // Aggregation Pipeline
         options: { runValidators: true },
       },
@@ -117,13 +119,12 @@ export const updateProductStock = async (
       ];
 
       // Add a check to ensure stock is sufficient and a reservation exists
-      updateOperation.updateOne.filter = {
-        _id: item._id,
+      Object.assign(updateOperation.updateOne.filter, {
         quantity: { $gte: item.quantity },
         reservations: {
           $elemMatch: { cartSessionId: sessionId, quantity: item.quantity },
         }, // Ensure correct reservation exists
-      };
+      });
     }
 
     return updateOperation;

@@ -62,7 +62,7 @@ export const expireSpecificSession = async (sessionUrlOrId) => {
     console.log(`Attempting to expire session: ${sessionId}`);
     // Find the session in our database
     const sessionRecord = await CheckoutSession.findOne({ sessionId });
-    
+
     if (!sessionRecord) {
       return {
         success: false,
@@ -70,7 +70,7 @@ export const expireSpecificSession = async (sessionUrlOrId) => {
         sessionId
       };
     }
-    
+
     if (sessionRecord.status !== 'active') {
       return {
         success: false,
@@ -79,7 +79,7 @@ export const expireSpecificSession = async (sessionUrlOrId) => {
         status: sessionRecord.status
       };
     }
-    
+
     // Get the Stripe session to access metadata with product information
     let stripeSession;
     try {
@@ -101,9 +101,9 @@ export const expireSpecificSession = async (sessionUrlOrId) => {
         sessionId
       };
     }
-    
+
     // Remove reservations for products in this session
-    if (stripeSession.metadata && stripeSession.metadata.products) {
+    if (stripeSession && stripeSession.metadata && stripeSession.metadata.products) {
       try {
         const products = JSON.parse(stripeSession.metadata.products);
         await removeReservationsForExpiredSession(products, sessionId);
@@ -112,7 +112,7 @@ export const expireSpecificSession = async (sessionUrlOrId) => {
         console.warn(`Warning: Could not parse products metadata for session ${sessionId}:`, parseError.message);
       }
     }
-    
+
     // Update session status in database
     await CheckoutSession.updateOne(
       { _id: sessionRecord._id },
@@ -121,7 +121,7 @@ export const expireSpecificSession = async (sessionUrlOrId) => {
         updatedAt: new Date()
       }
     );
-    
+
     console.log(`✓ Marked session ${sessionId} as expired`);
     // Try to expire the Stripe session
     try {
@@ -182,7 +182,7 @@ export const expireCheckoutSessions = async () => {
           // Stripe session might already be expired or invalid
           console.warn(`Warning: Could not expire Stripe session ${session.sessionId}:`, stripeError.message);
         }
-        
+
         // Get the Stripe session to access metadata with product information
         let stripeSession;
         try {
@@ -201,7 +201,7 @@ export const expireCheckoutSessions = async () => {
           console.log(`✓ Marked session ${session.sessionId} as expired for user ${session.userId} (without product cleanup)`);
           continue;
         }
-        
+
         // Remove reservations for products in this session
         if (stripeSession.metadata && stripeSession.metadata.products) {
           try {
@@ -212,7 +212,7 @@ export const expireCheckoutSessions = async () => {
             console.warn(`Warning: Could not parse products metadata for session ${session.sessionId}:`, parseError.message);
           }
         }
-        
+
         // Update session status in database
         await CheckoutSession.updateOne(
           { _id: session._id },
@@ -238,98 +238,6 @@ export const expireCheckoutSessions = async () => {
       errorCount,
       errors
     };
-    
-    /**
-     * Remove reservations from products when a checkout session expires
-     * @param {Array} products - Array of products with id, quantity, and size
-     * @param {string} sessionId - The session ID whose reservations should be removed
-     */
-    async function removeReservationsForExpiredSession(products, sessionId) {
-      const bulkOps = products.map((product) => {
-        const updateOperation = {
-          updateOne: {
-            filter: { _id: product.id },
-            update: {},
-          },
-        };
-    
-        if (product.size) {
-          // --- SIZED PRODUCT LOGIC ---
-          updateOperation.updateOne.update = [
-            {
-              $set: {
-                sizes: {
-                  $map: {
-                    input: "$sizes",
-                    as: "size",
-                    in: {
-                      $mergeObjects: [
-                        "$$size",
-                        {
-                          $cond: {
-                            if: { $eq: ["$$size.size", product.size] },
-                            then: {
-                              // Decrease the reserved count
-                              reserved: {
-                                $subtract: [
-                                  { $ifNull: ["$$size.reserved", 0] },
-                                  product.quantity,
-                                ],
-                              },
-                              // Remove the reservation object for this session
-                              reservations: {
-                                $filter: {
-                                  input: { $ifNull: ["$$size.reservations", []] },
-                                  as: "res",
-                                  cond: { $ne: ["$$res.cartSessionId", sessionId] },
-                                },
-                              },
-                            },
-                            else: "$$size", // Keep other sizes as is
-                          },
-                        },
-                      ],
-                    },
-                  },
-                },
-              },
-            },
-          ];
-        } else {
-          // --- NON-SIZED PRODUCT LOGIC ---
-          updateOperation.updateOne.update = [
-            {
-              $set: {
-                // Decrease the reserved count
-                reserved: {
-                  $subtract: [
-                    { $ifNull: ["$reserved", 0] },
-                    product.quantity,
-                  ],
-                },
-                // Remove the reservation object for this session
-                reservations: {
-                  $filter: {
-                    input: { $ifNull: ["$$size.reservations", []] },
-                    as: "res",
-                    cond: { $ne: ["$$res.cartSessionId", sessionId] },
-                  },
-                },
-              },
-            },
-          ];
-        }
-    
-        return updateOperation;
-      });
-    
-      const bulkResult = await executeBatchedBulkWrite(bulkOps, null, Product);
-      console.log(
-        `✅ Removed reservations from ${bulkResult.modifiedCount} products for expired session ${sessionId}`
-      );
-      
-      return bulkResult;
-    }
   } catch (error) {
     console.error('Error in expireCheckoutSessions:', error);
     return {
@@ -339,3 +247,95 @@ export const expireCheckoutSessions = async () => {
     };
   }
 };
+
+/**
+ * Remove reservations from products when a checkout session expires
+ * @param {Array} products - Array of products with id, quantity, and size
+ * @param {string} sessionId - The session ID whose reservations should be removed
+ */
+async function removeReservationsForExpiredSession(products, sessionId) {
+  const bulkOps = products.map((product) => {
+    const updateOperation = {
+      updateOne: {
+        filter: { _id: product.id },
+        update: {},
+      },
+    };
+
+    if (product.size) {
+      // --- SIZED PRODUCT LOGIC ---
+      updateOperation.updateOne.update = [
+        {
+          $set: {
+            sizes: {
+              $map: {
+                input: "$sizes",
+                as: "size",
+                in: {
+                  $mergeObjects: [
+                    "$$size",
+                    {
+                      $cond: {
+                        if: { $eq: ["$$size.size", product.size] },
+                        then: {
+                          // Decrease the reserved count
+                          reserved: {
+                            $subtract: [
+                              { $ifNull: ["$$size.reserved", 0] },
+                              product.quantity,
+                            ],
+                          },
+                          // Remove the reservation object for this session
+                          reservations: {
+                            $filter: {
+                              input: { $ifNull: ["$$size.reservations", []] },
+                              as: "res",
+                              cond: { $ne: ["$$res.cartSessionId", sessionId] },
+                            },
+                          },
+                        },
+                        else: "$$size", // Keep other sizes as is
+                      },
+                    },
+                  ],
+                },
+              },
+            },
+          },
+        },
+      ];
+    } else {
+      // --- NON-SIZED PRODUCT LOGIC ---
+      updateOperation.updateOne.update = [
+        {
+          $set: {
+            // Decrease the reserved count
+            reserved: {
+              $subtract: [
+                { $ifNull: ["$reserved", 0] },
+                product.quantity,
+              ],
+            },
+            // Remove the reservation object for this session
+            reservations: {
+              $filter: {
+                input: { $ifNull: ["$reservations", []] },
+                as: "res",
+                cond: { $ne: ["$$res.cartSessionId", sessionId] },
+              },
+            },
+          },
+        },
+      ];
+    }
+
+    return updateOperation;
+  });
+
+  const bulkResult = await executeBatchedBulkWrite(bulkOps, null, Product);
+  console.log(
+    `✅ Removed reservations from ${bulkResult.modifiedCount} products for expired session ${sessionId}`
+  );
+
+  return bulkResult;
+}

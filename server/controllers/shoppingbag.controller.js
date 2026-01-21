@@ -44,8 +44,9 @@ export const addToShoppingBag = async (req, res) => {
     }
 
     // Check if item with same product ID and size exists
+    const normalizedSize = size || null;
     const existingItemIndex = user.ShoppingBagItems.findIndex(
-      (item) => item._id.toString() === productId && item.size === size
+      (item) => item._id.toString() === productId && item.size === normalizedSize
     );
     if (existingItemIndex !== -1) {
       // Update existing item
@@ -106,8 +107,9 @@ export const removeAllFromShoppingBag = async (req, res) => {
     if (!productId) {
       user.ShoppingBagItems = [];
     } else {
+      const normalizedSize = size || null;
       user.ShoppingBagItems = user.ShoppingBagItems.filter(
-        (item) => !(item._id.toString() === productId && item.size === size)
+        (item) => !(item._id.toString() === productId && item.size === normalizedSize)
       );
     }
 
@@ -153,12 +155,14 @@ export const updateQuantity = async (req, res) => {
     const user = req.user;
 
     if (quantity === 0) {
+      const normalizedSize = size || null;
       user.ShoppingBagItems = user.ShoppingBagItems.filter(
-        (item) => !(item._id.toString() === productId && item.size === size)
+        (item) => !(item._id.toString() === productId && item.size === normalizedSize)
       );
     } else {
+      const normalizedSize = size || null;
       const existingItem = user.ShoppingBagItems.find(
-        (item) => item._id.toString() === productId && item.size === size
+        (item) => item._id.toString() === productId && item.size === normalizedSize
       );
 
       if (existingItem) {
@@ -289,7 +293,7 @@ export const getShoppingBagProducts = async (req, res) => {
               ...baseProduct,
               isAvailable: false,
               errorMessage: "Size is currently reserved by others",
-              shouldRemove: false, // Don't auto-remove, just mark unavailable
+              shouldRemove: true,
             };
           }
 

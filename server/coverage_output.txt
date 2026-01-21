@@ -1,0 +1,797 @@
+
+> e-commerce-store@1.0.0 test
+> node --experimental-vm-modules node_modules/jest/bin/jest.js --detectOpenHandles --coverage
+
+(node:11741) ExperimentalWarning: VM Modules is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+  console.log
+    Mock MongoDB connected
+
+      at log (tests/setup.js:14:17)
+
+  console.log
+    Mock MongoDB disconnected
+
+      at log (tests/setup.js:30:17)
+
+PASS tests/controllers/auth.route.test.js
+  Auth Routes Tests
+    POST /api/auth/signup
+      ✓ should create a new user and return user data with cookies (191 ms)
+      ✓ should return 400 if user already exists (105 ms)
+    POST /api/auth/login
+      ✓ should login successfully with valid credentials (180 ms)
+      ✓ should return 401 with invalid credentials (175 ms)
+    GET /api/auth/profile
+      ✓ should return user profile when authenticated (188 ms)
+      ✓ should return 401 when not authenticated (13 ms)
+
+  console.log
+    Mock MongoDB connected
+
+      at log (tests/setup.js:14:17)
+
+  console.log
+    ✅ Bulk write successful! Modified 1 documents.
+
+      at log (utils/stockService.js:345:13)
+
+  console.log
+    === CHECKOUT SUCCESS STARTED ===
+
+      at log (controllers/payment.controller.js:130:11)
+
+  console.log
+    Session ID: cs_test_123
+
+      at log (controllers/payment.controller.js:131:11)
+
+  console.log
+    ✅ Bulk write successful! Modified 1 documents.
+
+      at log (utils/stockService.js:135:11)
+
+  console.log
+    Attempting to save order to MongoDB...
+
+      at log (controllers/payment.controller.js:191:13)
+
+  console.log
+    ✓ Order saved successfully: new ObjectId('696f060e4cbb744c9dd28443')
+
+      at log (controllers/payment.controller.js:193:13)
+
+  console.log
+    ✓ User shopping bag cleared successfully
+
+      at log (controllers/payment.controller.js:198:13)
+
+  console.log
+    === CHECKOUT SUCCESS COMPLETED ===
+
+      at log (controllers/payment.controller.js:215:13)
+
+  console.log
+    === CHECKOUT SUCCESS STARTED ===
+
+      at log (controllers/payment.controller.js:130:11)
+
+  console.log
+    Session ID: cs_doubled
+
+      at log (controllers/payment.controller.js:131:11)
+
+  console.log
+    Mock MongoDB disconnected
+
+      at log (tests/setup.js:30:17)
+
+PASS tests/controllers/payment.route.test.js
+  Payment Routes Tests
+    POST /api/payments/create-checkout-session
+      ✓ should create a checkout session successfully (500 ms)
+      ✓ should return 400 for empty products (117 ms)
+    POST /api/payments/checkout-success
+      ✓ should handle successful checkout and create order (171 ms)
+      ✓ should return idempotency message if processed twice (140 ms)
+
+  console.log
+    Mock MongoDB connected
+
+      at log (tests/setup.js:14:17)
+
+  console.log
+    Mock MongoDB disconnected
+
+      at log (tests/setup.js:30:17)
+
+PASS tests/controllers/coupon.route.test.js
+  Coupon Routes Tests
+    GET /api/coupons
+      ✓ should return user's active coupon (186 ms)
+      ✓ should return null if no active coupon (103 ms)
+    POST /api/coupons/validate
+      ✓ should validate a valid coupon (121 ms)
+      ✓ should return 404 for expired coupon (121 ms)
+
+  console.log
+    Mock MongoDB connected
+
+      at log (tests/setup.js:14:17)
+
+  console.log
+    Mock MongoDB disconnected
+
+      at log (tests/setup.js:30:17)
+
+PASS tests/models/order.model.test.js
+  Order Model Tests
+    ✓ should create an order successfully (166 ms)
+    ✓ should fail if required fields are missing (10 ms)
+    ✓ should fail if stripeSessionId is duplicated (20 ms)
+
+  console.log
+    Mock MongoDB connected
+
+      at log (tests/setup.js:14:17)
+
+  console.log
+    Mock MongoDB disconnected
+
+      at log (tests/setup.js:30:17)
+
+PASS tests/models/idempotencyKey.model.test.js
+  IdempotencyKey Model Tests
+    ✓ should create an idempotency key successfully (153 ms)
+    ✓ should fail if idempotencyKey is missing (25 ms)
+    ✓ should fail if idempotencyKey is not unique (22 ms)
+
+  console.log
+    Mock MongoDB connected
+
+      at log (tests/setup.js:14:17)
+
+  console.log
+    Mock MongoDB disconnected
+
+      at log (tests/setup.js:30:17)
+
+PASS tests/controllers/analytics.route.test.js
+  Analytics Routes Tests
+    GET /api/analytics
+      ✓ should return analytics data for admin (242 ms)
+      ✓ should return 403 for non-admin (200 ms)
+
+  console.log
+    Mock MongoDB connected
+
+      at log (tests/setup.js:14:17)
+
+  console.log
+    Mock MongoDB disconnected
+
+      at log (tests/setup.js:30:17)
+
+PASS tests/controllers/wishlist.route.test.js
+  Wishlist Routes Tests
+    POST /api/wishlist
+      ✓ should add a product to wishlist (311 ms)
+      ✓ should fail if product already in wishlist (137 ms)
+    GET /api/wishlist
+      ✓ should get wishlist items (146 ms)
+    DELETE /api/wishlist/:productId
+      ✓ should remove item from wishlist (135 ms)
+
+  console.log
+    Mock MongoDB connected
+
+      at log (tests/setup.js:14:17)
+
+  console.log
+    Mock MongoDB disconnected
+
+      at log (tests/setup.js:30:17)
+
+PASS tests/controllers/shoppingbag.route.test.js
+  Shopping Bag Routes Tests
+    POST /api/shoppingBag
+      ✓ should add a product to shopping bag (280 ms)
+      ✓ should add a sized product to shopping bag (310 ms)
+      ✓ should fail if product is out of stock (193 ms)
+    GET /api/shoppingBag
+      ✓ should return shopping bag items with details (183 ms)
+    PUT /api/shoppingBag/:id
+      ✓ should update quantity (151 ms)
+
+  console.log
+    Mock MongoDB connected
+
+      at log (tests/setup.js:14:17)
+
+  console.log
+    ✅ Bulk write successful! Modified 1 documents.
+
+      at log (utils/stockService.js:345:13)
+
+  console.log
+    ✅ Bulk write successful! Modified 1 documents.
+
+      at log (utils/stockService.js:345:13)
+
+  console.error
+    ❌ Transaction failed and rolled back: Error: Some products could not be reserved due to insufficient stock.
+        at reserveProducts (/Users/cindy/workspace/E-Commerce store/server/utils/stockService.js:340:13)
+        at processTicksAndRejections (node:internal/process/task_queues:105:5)
+        at Object.<anonymous> (/Users/cindy/workspace/E-Commerce store/server/tests/utils/stockService.test.js:96:13)
+
+      349 |   } catch (error) {
+      350 |     await mongooseSession.abortTransaction();
+    > 351 |     console.error("❌ Transaction failed and rolled back:", error);
+          |             ^
+      352 |     throw error;
+      353 |   } finally {
+      354 |     mongooseSession.endSession();
+
+      at error (utils/stockService.js:351:13)
+      at Object.<anonymous> (tests/utils/stockService.test.js:96:13)
+
+  console.log
+    ✅ Bulk write successful! Modified 1 documents.
+
+      at log (utils/stockService.js:135:11)
+
+  console.log
+    ✅ Bulk write successful! Modified 1 documents.
+
+      at log (utils/stockService.js:135:11)
+
+  console.log
+    Mock MongoDB disconnected
+
+      at log (tests/setup.js:30:17)
+
+PASS tests/utils/stockService.test.js
+  Stock Service Tests
+    reserveProducts
+      ✓ should successfully reserve a non-sized product (170 ms)
+      ✓ should successfully reserve a sized product (37 ms)
+      ✓ should rollback if one product in batch cannot be reserved (41 ms)
+    updateProductStock
+      ✓ should deduct stock after successful purchase for non-sized product (26 ms)
+      ✓ should deduct stock for sized product (27 ms)
+
+  console.log
+    Mock MongoDB connected
+
+      at log (tests/setup.js:14:17)
+
+  console.log
+    Search query: Search
+
+      at log (controllers/product.controller.js:214:13)
+
+  console.log
+    Search regex: /Search/i
+
+      at log (controllers/product.controller.js:216:13)
+
+  console.log
+    Found products: 1
+
+      at log (controllers/product.controller.js:242:13)
+
+  console.log
+    Mock MongoDB disconnected
+
+      at log (tests/setup.js:30:17)
+
+PASS tests/controllers/product.route.test.js
+  Product Routes Tests
+    GET /api/products
+      ✓ should return all products for admin (42 ms)
+      ✓ should return 403 for non-admin user (17 ms)
+    POST /api/products
+      ✓ should create a new product for admin (23 ms)
+      ✓ should fail to create product with sizes but no size data (16 ms)
+    GET /api/products/featured
+      ✓ should return featured products (18 ms)
+    GET /api/products/search
+      ✓ should return products matching query (28 ms)
+      ✓ should return 400 if no query provided (14 ms)
+
+  console.log
+    Mock MongoDB connected
+
+      at log (tests/setup.js:14:17)
+
+  console.log
+    Mock MongoDB disconnected
+
+      at log (tests/setup.js:30:17)
+
+PASS tests/models/coupon.model.test.js
+  Coupon Model Tests
+    ✓ should create a coupon successfully (164 ms)
+    ✓ should fail if required fields are missing (34 ms)
+    ✓ should fail if discountPercentage is out of range (12 ms)
+
+  console.log
+    Mock MongoDB connected
+
+      at log (tests/setup.js:14:17)
+
+  console.log
+    Checkout session expired: cs_expired_123
+
+      at log (routes/webhook.route.js:36:15)
+
+  console.log
+    Webhook signature verification failed. Invalid signature
+
+      at log (routes/webhook.route.js:28:13)
+
+  console.log
+    Mock MongoDB disconnected
+
+      at log (tests/setup.js:30:17)
+
+PASS tests/controllers/webhook.route.test.js
+  Webhook Routes Tests
+    POST /api/webhooks/stripe
+      ✓ should handle checkout.session.expired (173 ms)
+      ✓ should return 400 if signature verification fails (12 ms)
+
+  console.log
+    Mock MongoDB connected
+
+      at log (tests/setup.js:14:17)
+
+  console.log
+    Attempting to expire session: cs_test_not_found
+
+      at log (utils/sessionExpiryService.js:62:13)
+
+  console.log
+    Attempting to expire session: cs_expired
+
+      at log (utils/sessionExpiryService.js:62:13)
+
+  console.log
+    Attempting to expire session: cs_stripe_error
+
+      at log (utils/sessionExpiryService.js:62:13)
+
+  console.warn
+    Warning: Could not retrieve Stripe session cs_stripe_error: Stripe error
+
+      86 |       stripeSession = await stripe.checkout.sessions.retrieve(sessionId);
+      87 |     } catch (retrieveError) {
+    > 88 |       console.warn(`Warning: Could not retrieve Stripe session ${sessionId}:`, retrieveError.message);
+         |               ^
+      89 |       // Still mark the session as expired even if we can't retrieve the details
+      90 |       await CheckoutSession.updateOne(
+      91 |         { _id: sessionRecord._id },
+
+      at warn (utils/sessionExpiryService.js:88:15)
+      at Object.<anonymous> (tests/utils/sessionExpiryService.test.js:73:28)
+
+  console.log
+    ✓ Marked session cs_stripe_error as expired (without product cleanup)
+
+      at log (utils/sessionExpiryService.js:97:15)
+
+  console.log
+    Attempting to expire session: cs_cleanup
+
+      at log (utils/sessionExpiryService.js:62:13)
+
+  console.log
+    ✅ Removed reservations from 1 products for expired session cs_cleanup
+
+      at log (utils/sessionExpiryService.js:336:11)
+
+  console.log
+    ✓ Removed reservations for session cs_cleanup
+
+      at log (utils/sessionExpiryService.js:110:17)
+
+  console.log
+    ✓ Marked session cs_cleanup as expired
+
+      at log (utils/sessionExpiryService.js:125:13)
+
+  console.log
+    ✓ Expired Stripe session: cs_cleanup
+
+      at log (utils/sessionExpiryService.js:129:15)
+
+  console.log
+    Found 2 expired checkout sessions to process
+
+      at log (utils/sessionExpiryService.js:168:13)
+
+  console.log
+    ✓ Expired Stripe session: s1
+
+      at log (utils/sessionExpiryService.js:180:19)
+
+  console.log
+    ✅ Removed reservations from 1 products for expired session s1
+
+      at log (utils/sessionExpiryService.js:336:11)
+
+  console.log
+    ✓ Removed reservations for session s1
+
+      at log (utils/sessionExpiryService.js:210:21)
+
+  console.log
+    ✓ Marked session s1 as expired for user null
+
+      at log (utils/sessionExpiryService.js:225:17)
+
+  console.log
+    ✓ Expired Stripe session: s2
+
+      at log (utils/sessionExpiryService.js:180:19)
+
+  console.log
+    ✓ Marked session s2 as expired for user null
+
+      at log (utils/sessionExpiryService.js:225:17)
+
+  console.log
+    Mock MongoDB disconnected
+
+      at log (tests/setup.js:30:17)
+
+PASS tests/utils/sessionExpiryService.test.js
+  Session Expiry Service Tests
+    expireSpecificSession
+      ✓ should return false if session not found in database (135 ms)
+      ✓ should return false if session is already expired (70 ms)
+      ✓ should handle Stripe retrieval error and still expire locally (73 ms)
+      ✓ should successfully expire session and clean up reservations (103 ms)
+    expireCheckoutSessions
+      ✓ should return success message if no expired sessions found (24 ms)
+      ✓ should process multiple expired sessions (146 ms)
+
+  console.log
+    Mock MongoDB connected
+
+      at log (tests/setup.js:14:17)
+
+  console.log
+    Mock MongoDB disconnected
+
+      at log (tests/setup.js:30:17)
+
+PASS tests/models/checkoutSession.model.test.js
+  CheckoutSession Model Tests
+    ✓ should create a checkout session successfully (104 ms)
+    ✓ should fail if required fields are missing (36 ms)
+    ✓ should fail if sessionId is not unique (53 ms)
+
+  console.log
+    Mock MongoDB connected
+
+      at log (tests/setup.js:14:17)
+
+  console.log
+    Mock MongoDB disconnected
+
+      at log (tests/setup.js:30:17)
+
+PASS tests/models/wishlist.model.test.js
+  Wishlist Model Tests
+    ✓ should add a product to wishlist successfully (148 ms)
+    ✓ should fail if required fields are missing (24 ms)
+    ✓ should fail if duplicate product is added for same user (103 ms)
+
+  console.log
+    Mock MongoDB connected
+
+      at log (tests/setup.js:14:17)
+
+  console.error
+    ❌ Batch 1 failed: MongoBulkWriteError: WriteConflict error: this operation conflicted with another operation. Please retry your operation or multi-document transaction.
+        at executeCommands (/Users/cindy/workspace/E-Commerce store/server/node_modules/mongodb/src/bulk/common.ts:578:15)
+        at processTicksAndRejections (node:internal/process/task_queues:105:5)
+        at BulkWriteShimOperation.execute (/Users/cindy/workspace/E-Commerce store/server/node_modules/mongodb/src/bulk/common.ts:882:12)
+        at tryOperation (/Users/cindy/workspace/E-Commerce store/server/node_modules/mongodb/src/operations/execute_operation.ts:283:14)
+        at executeOperation (/Users/cindy/workspace/E-Commerce store/server/node_modules/mongodb/src/operations/execute_operation.ts:115:12)
+        at OrderedBulkOperation.execute (/Users/cindy/workspace/E-Commerce store/server/node_modules/mongodb/src/bulk/common.ts:1211:12)
+        at BulkWriteOperation.execute (/Users/cindy/workspace/E-Commerce store/server/node_modules/mongodb/src/operations/bulk_write.ts:60:12)
+        at tryOperation (/Users/cindy/workspace/E-Commerce store/server/node_modules/mongodb/src/operations/execute_operation.ts:283:14)
+        at executeOperation (/Users/cindy/workspace/E-Commerce store/server/node_modules/mongodb/src/operations/execute_operation.ts:115:12)
+        at Collection.bulkWrite (/Users/cindy/workspace/E-Commerce store/server/node_modules/mongodb/src/collection.ts:344:12)
+        at Function.bulkWrite (/Users/cindy/workspace/E-Commerce store/server/node_modules/mongoose/lib/model.js:3417:13)
+        at executeBatchedBulkWrite (/Users/cindy/workspace/E-Commerce store/server/utils/bulkOperationHelper.js:30:27)
+        at reserveProducts (/Users/cindy/workspace/E-Commerce store/server/utils/stockService.js:335:22)
+        at async Promise.allSettled (index 1)
+        at Object.<anonymous> (/Users/cindy/workspace/E-Commerce store/server/tests/payment.concurrency.test.js:44:25) {
+      errorLabelSet: Set(1) { 'TransientTransactionError' },
+      errorResponse: {
+        errorLabels: [ 'TransientTransactionError' ],
+        ok: 0,
+        errmsg: 'WriteConflict error: this operation conflicted with another operation. Please retry your operation or multi-document transaction.',
+        code: 112,
+        codeName: 'WriteConflict',
+        '$clusterTime': {
+          clusterTime: new Timestamp({ t: 1768883771, i: 9 }),
+          signature: [Object]
+        },
+        operationTime: new Timestamp({ t: 1768883771, i: 9 })
+      },
+      ok: 0,
+      code: 112,
+      codeName: 'WriteConflict',
+      '$clusterTime': {
+        clusterTime: new Timestamp({ t: 1768883771, i: 9 }),
+        signature: {
+          hash: Binary.createFromBase64('AAAAAAAAAAAAAAAAAAAAAAAAAAA=', 0),
+          keyId: 0
+        }
+      },
+      operationTime: new Timestamp({ t: 1768883771, i: 9 }),
+      writeErrors: [],
+      result: BulkWriteResult {
+        insertedCount: 0,
+        matchedCount: 0,
+        modifiedCount: 0,
+        deletedCount: 0,
+        upsertedCount: 0,
+        upsertedIds: {},
+        insertedIds: {}
+      }
+    }
+
+      40 |
+      41 |     } catch (error) {
+    > 42 |       console.error(`❌ Batch ${results.batchCount} failed:`, error);
+         |               ^
+      43 |       throw new Error(`Bulk operation failed in batch ${results.batchCount}: ${error.message}`);
+      44 |     }
+      45 |   }
+
+      at error (utils/bulkOperationHelper.js:42:15)
+      at reserveProducts (utils/stockService.js:335:22)
+          at async Promise.allSettled (index 1)
+      at Object.<anonymous> (tests/payment.concurrency.test.js:44:25)
+
+  console.log
+    ✅ Bulk write successful! Modified 1 documents.
+
+      at log (utils/stockService.js:345:13)
+          at async Promise.allSettled (index 0)
+
+  console.log
+    Fulfilled: 1 Rejected: 1
+
+      at Object.<anonymous> (tests/payment.concurrency.test.js:53:17)
+
+  console.error
+    ❌ Batch 1 failed: MongoBulkWriteError: WriteConflict error: this operation conflicted with another operation. Please retry your operation or multi-document transaction.
+        at executeCommands (/Users/cindy/workspace/E-Commerce store/server/node_modules/mongodb/src/bulk/common.ts:578:15)
+        at processTicksAndRejections (node:internal/process/task_queues:105:5)
+        at BulkWriteShimOperation.execute (/Users/cindy/workspace/E-Commerce store/server/node_modules/mongodb/src/bulk/common.ts:882:12)
+        at tryOperation (/Users/cindy/workspace/E-Commerce store/server/node_modules/mongodb/src/operations/execute_operation.ts:283:14)
+        at executeOperation (/Users/cindy/workspace/E-Commerce store/server/node_modules/mongodb/src/operations/execute_operation.ts:115:12)
+        at OrderedBulkOperation.execute (/Users/cindy/workspace/E-Commerce store/server/node_modules/mongodb/src/bulk/common.ts:1211:12)
+        at BulkWriteOperation.execute (/Users/cindy/workspace/E-Commerce store/server/node_modules/mongodb/src/operations/bulk_write.ts:60:12)
+        at tryOperation (/Users/cindy/workspace/E-Commerce store/server/node_modules/mongodb/src/operations/execute_operation.ts:283:14)
+        at executeOperation (/Users/cindy/workspace/E-Commerce store/server/node_modules/mongodb/src/operations/execute_operation.ts:115:12)
+        at Collection.bulkWrite (/Users/cindy/workspace/E-Commerce store/server/node_modules/mongodb/src/collection.ts:344:12)
+        at Function.bulkWrite (/Users/cindy/workspace/E-Commerce store/server/node_modules/mongoose/lib/model.js:3417:13)
+        at executeBatchedBulkWrite (/Users/cindy/workspace/E-Commerce store/server/utils/bulkOperationHelper.js:30:27)
+        at reserveProducts (/Users/cindy/workspace/E-Commerce store/server/utils/stockService.js:335:22)
+        at async Promise.allSettled (index 1)
+        at Object.<anonymous> (/Users/cindy/workspace/E-Commerce store/server/tests/payment.concurrency.test.js:108:25) {
+      errorLabelSet: Set(1) { 'TransientTransactionError' },
+      errorResponse: {
+        errorLabels: [ 'TransientTransactionError' ],
+        ok: 0,
+        errmsg: 'WriteConflict error: this operation conflicted with another operation. Please retry your operation or multi-document transaction.',
+        code: 112,
+        codeName: 'WriteConflict',
+        '$clusterTime': {
+          clusterTime: new Timestamp({ t: 1768883771, i: 12 }),
+          signature: [Object]
+        },
+        operationTime: new Timestamp({ t: 1768883771, i: 12 })
+      },
+      ok: 0,
+      code: 112,
+      codeName: 'WriteConflict',
+      '$clusterTime': {
+        clusterTime: new Timestamp({ t: 1768883771, i: 12 }),
+        signature: {
+          hash: Binary.createFromBase64('AAAAAAAAAAAAAAAAAAAAAAAAAAA=', 0),
+          keyId: 0
+        }
+      },
+      operationTime: new Timestamp({ t: 1768883771, i: 12 }),
+      writeErrors: [],
+      result: BulkWriteResult {
+        insertedCount: 0,
+        matchedCount: 0,
+        modifiedCount: 0,
+        deletedCount: 0,
+        upsertedCount: 0,
+        upsertedIds: {},
+        insertedIds: {}
+      }
+    }
+
+      40 |
+      41 |     } catch (error) {
+    > 42 |       console.error(`❌ Batch ${results.batchCount} failed:`, error);
+         |               ^
+      43 |       throw new Error(`Bulk operation failed in batch ${results.batchCount}: ${error.message}`);
+      44 |     }
+      45 |   }
+
+      at error (utils/bulkOperationHelper.js:42:15)
+      at reserveProducts (utils/stockService.js:335:22)
+          at async Promise.allSettled (index 1)
+      at Object.<anonymous> (tests/payment.concurrency.test.js:108:25)
+
+  console.log
+    ✅ Bulk write successful! Modified 1 documents.
+
+      at log (utils/stockService.js:345:13)
+          at async Promise.allSettled (index 0)
+
+  console.log
+    Mock MongoDB disconnected
+
+      at log (tests/setup.js:30:17)
+
+PASS tests/payment.concurrency.test.js (5.001 s)
+  Concurrency Payment Tests
+    ✓ should prevent double booking when two users try to buy the last item simultaneously (186 ms)
+    ✓ should prevent double booking for SIZED products (32 ms)
+
+  console.log
+    Mock MongoDB connected
+
+      at log (tests/setup.js:14:17)
+
+  console.log
+    Mock MongoDB disconnected
+
+      at log (tests/setup.js:30:17)
+
+PASS tests/models/product.model.test.js (5.822 s)
+  Product Model Tests
+    ✓ should create a non-sized product successfully (107 ms)
+    ✓ should create a sized product successfully (22 ms)
+    ✓ should mark product as out of stock if quantity is 0 (18 ms)
+    ✓ should mark sized product as out of stock if all sizes have 0 quantity (21 ms)
+    ✓ should fail validation if required fields are missing (7 ms)
+    ✓ should fail if price is negative (12 ms)
+
+  console.log
+    Mock MongoDB connected
+
+      at log (tests/setup.js:14:17)
+
+  console.log
+    Mock MongoDB disconnected
+
+      at log (tests/setup.js:30:17)
+
+PASS tests/models/user.model.test.js
+  User Model Tests
+    ✓ should create a user successfully (179 ms)
+    ✓ should fail to create a user without required fields (12 ms)
+    ✓ should fail to create a user with duplicate email (278 ms)
+    ✓ should properly hash the password before saving (97 ms)
+    ✓ should correctly compare passwords (303 ms)
+
+PASS tests/middleware/auth.middleware.test.js
+  Auth Middleware Tests
+    protectRoute
+      ✓ should return 401 if no accessToken cookie is present (7 ms)
+      ✓ should return 401 if token is expired (3 ms)
+      ✓ should return 401 if user is not found in database (3 ms)
+      ✓ should call next() and set req.user if token is valid and user exists (4 ms)
+    adminRoute
+      ✓ should return 403 if user is not an admin (2 ms)
+      ✓ should call next() if user is an admin (1 ms)
+
+  console.error
+    ❌ Batch 1 failed: Error: Database error
+        at Object.<anonymous> (/Users/cindy/workspace/E-Commerce store/server/tests/utils/bulkOperationHelper.test.js:64:47)
+        at Promise.then.completed (/Users/cindy/workspace/E-Commerce store/server/node_modules/jest-circus/build/utils.js:298:28)
+        at new Promise (<anonymous>)
+        at callAsyncCircusFn (/Users/cindy/workspace/E-Commerce store/server/node_modules/jest-circus/build/utils.js:231:10)
+        at _callCircusTest (/Users/cindy/workspace/E-Commerce store/server/node_modules/jest-circus/build/run.js:316:40)
+        at _runTest (/Users/cindy/workspace/E-Commerce store/server/node_modules/jest-circus/build/run.js:252:3)
+        at _runTestsForDescribeBlock (/Users/cindy/workspace/E-Commerce store/server/node_modules/jest-circus/build/run.js:126:9)
+        at _runTestsForDescribeBlock (/Users/cindy/workspace/E-Commerce store/server/node_modules/jest-circus/build/run.js:121:9)
+        at run (/Users/cindy/workspace/E-Commerce store/server/node_modules/jest-circus/build/run.js:71:3)
+        at runAndTransformResultsToJestFormat (/Users/cindy/workspace/E-Commerce store/server/node_modules/jest-circus/build/legacy-code-todo-rewrite/jestAdapterInit.js:122:21)
+        at jestAdapter (/Users/cindy/workspace/E-Commerce store/server/node_modules/jest-circus/build/legacy-code-todo-rewrite/jestAdapter.js:79:19)
+        at runTestInternal (/Users/cindy/workspace/E-Commerce store/server/node_modules/jest-runner/build/runTest.js:367:16)
+        at runTest (/Users/cindy/workspace/E-Commerce store/server/node_modules/jest-runner/build/runTest.js:444:34)
+
+      40 |
+      41 |     } catch (error) {
+    > 42 |       console.error(`❌ Batch ${results.batchCount} failed:`, error);
+         |               ^
+      43 |       throw new Error(`Bulk operation failed in batch ${results.batchCount}: ${error.message}`);
+      44 |     }
+      45 |   }
+
+      at error (utils/bulkOperationHelper.js:42:15)
+      at Object.<anonymous> (tests/utils/bulkOperationHelper.test.js:66:9)
+
+PASS tests/utils/bulkOperationHelper.test.js
+  Bulk Operation Helper Tests
+    ✓ should return empty results if no operations provided (3 ms)
+    ✓ should execute operations in a single batch if count < BATCH_SIZE (1 ms)
+    ✓ should execute operations in multiple batches if count > BATCH_SIZE (1 ms)
+    ✓ should throw error if any batch fails (7 ms)
+
+----------------------------|---------|----------|---------|---------|-------------------------------------------------------------------------------------------------------------
+File                        | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s                                                                                           
+----------------------------|---------|----------|---------|---------|-------------------------------------------------------------------------------------------------------------
+All files                   |   65.78 |    51.73 |   68.67 |   66.19 |                                                                                                             
+ controllers                |   53.42 |    43.42 |   57.37 |   53.94 |                                                                                                             
+  analytics.controller.js   |     100 |    83.33 |     100 |     100 | 18                                                                                                          
+  auth.controller.js        |   55.07 |       50 |      75 |   55.07 | 76-77,102-103,108-132,137-160,168-169                                                                       
+  coupon.controller.js      |   73.68 |    83.33 |     100 |   73.68 | 12-13,26,41-42                                                                                              
+  payment.controller.js     |   76.47 |     62.5 |   66.66 |   76.47 | 49-55,89,100,104-126,166,223-226                                                                            
+  product.controller.js     |   29.53 |    28.33 |   23.52 |   30.13 | 13-20,28-29,37,41-42,77-79,84-85,90-109,114-132,137-162,167-188,193-202,229-236,246-251,259-304             
+  shoppingbag.controller.js |   53.02 |    42.24 |   52.63 |   54.28 | 11,17,24,32,49,53,97-98,103-146,157-159,172,176-182,189,197,213-216,233-234,244,262,278-309,322,331,360-361 
+  wishlist.controller.js    |    82.6 |       50 |     100 |   81.81 | 15,41,54,59                                                                                                 
+ middleware                 |   86.95 |       90 |     100 |   86.95 |                                                                                                             
+  auth.middleware.js        |   86.95 |       90 |     100 |   86.95 | 40-44                                                                                                       
+ models                     |   97.56 |      100 |     100 |   97.43 |                                                                                                             
+  checkoutSession.model.js  |     100 |      100 |     100 |     100 |                                                                                                             
+  coupon.model.js           |     100 |      100 |     100 |     100 |                                                                                                             
+  idempotencyKey.model.js   |     100 |      100 |     100 |     100 |                                                                                                             
+  order.model.js            |     100 |      100 |     100 |     100 |                                                                                                             
+  product.model.js          |     100 |      100 |     100 |     100 |                                                                                                             
+  user.model.js             |   91.66 |      100 |     100 |    90.9 | 57                                                                                                          
+  wishlist.model.js         |     100 |      100 |     100 |     100 |                                                                                                             
+ routes                     |   89.55 |    33.33 |     100 |   89.55 |                                                                                                             
+  analytics.route.js        |      80 |      100 |     100 |      80 | 17-18                                                                                                       
+  auth.route.js             |     100 |      100 |     100 |     100 |                                                                                                             
+  coupon.route.js           |     100 |      100 |     100 |     100 |                                                                                                             
+  payment.route.js          |     100 |      100 |     100 |     100 |                                                                                                             
+  product.route.js          |     100 |      100 |     100 |     100 |                                                                                                             
+  shoppingbag.route.js      |     100 |      100 |     100 |     100 |                                                                                                             
+  webhook.route.js          |      80 |    33.33 |     100 |      80 | 46,51-57                                                                                                    
+  wishlist.route.js         |     100 |      100 |     100 |     100 |                                                                                                             
+ tests                      |   79.16 |       50 |     100 |   79.16 |                                                                                                             
+  setup.js                  |   79.16 |       50 |     100 |   79.16 | 16-18,32,44                                                                                                 
+ utils                      |   82.31 |    84.84 |     100 |   82.19 |                                                                                                             
+  bulkOperationHelper.js    |     100 |      100 |     100 |     100 |                                                                                                             
+  sessionExpiryService.js   |   72.04 |    76.19 |     100 |   72.04 | 38-50,112,131,141-142,183,191-202,212,227-230,242-243,267                                                   
+  stockService.js           |     100 |      100 |     100 |     100 |                                                                                                             
+----------------------------|---------|----------|---------|---------|-------------------------------------------------------------------------------------------------------------
+Test Suites: 20 passed, 20 total
+Tests:       83 passed, 83 total
+Snapshots:   0 total
+Time:        62.969 s
+Ran all test suites.
+
+Jest has detected the following 1 open handle potentially keeping Jest from exiting:
+
+  ●  bound-anonymous-fn
+
+      73 |
+      74 |             const response = await request(app)
+    > 75 |                 .post("/api/webhooks/stripe")
+         |                  ^
+      76 |                 .set("stripe-signature", "invalid_sig")
+      77 |                 .send({});
+      78 |
+
+      at Test.serverAddress (node_modules/supertest/lib/test.js:63:35)
+      at new Test (node_modules/supertest/lib/test.js:49:14)
+      at Object.obj.<computed> [as post] (node_modules/supertest/index.js:40:18)
+      at Object.<anonymous> (tests/controllers/webhook.route.test.js:75:18)
+

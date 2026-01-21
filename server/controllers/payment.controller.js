@@ -58,6 +58,7 @@ export const createCheckoutSession = async (req, res) => {
       }
     }
     const session = await stripe.checkout.sessions.create({
+      expires_at: Math.floor(Date.now() / 1000) + (30 * 60),
       line_items: lineItems,
       payment_method_types: ["card"],
       mode: "payment",
@@ -127,104 +128,114 @@ async function createNewCoupon(userId) {
 }
 
 export const checkoutSuccess = async (req, res) => {
-  console.log("=== CHECKOUT SUCCESS STARTED ===");
-  console.log("Session ID:", req.body.sessionId);
-
-  const { sessionId } = req.body;
-  const session = await stripe.checkout.sessions.retrieve(sessionId);
-
-  // check idempotency key
-  let idempotencyKey = await IdempotencyKey.findOne({
-    $or: [
-      { idempotencyKey: sessionId, status: "completed" },
-      {
-        idempotencyKey: sessionId,
-        status: "pending",
-        lockExpiry: { $gt: Date.now() },
-      },
-    ],
-  });
-  if (idempotencyKey) {
-    return res.status(200).json({
-      message: "Processing or completed payment session",
-    });
-  }
-  if (idempotencyKey == null) {
-    await IdempotencyKey.create({
-      idempotencyKey: sessionId,
-      status: "pending",
-      lockExpiry: Date.now() + 24 * 60 * 60 * 1000,
-    });
-  }
-  // Use a transaction to ensure all or none of the updates occur
-  const mongooseSession = await mongoose.startSession();
   try {
-    mongooseSession.startTransaction();
+    console.log("=== CHECKOUT SUCCESS STARTED ===");
+    console.log("Session ID:", req.body.sessionId);
 
-    if (session.payment_status === "paid") {
-      if (session.metadata.couponCode) {
-        await Coupon.findOneAndUpdate(
-          {
-            code: session.metadata.couponCode,
-            userId: session.metadata.userId,
-          },
-          { isActive: false }
-        );
-      }
+    const { sessionId } = req.body;
+    const session = await stripe.checkout.sessions.retrieve(sessionId);
+
+    // check idempotency key
+    let idempotencyKey = await IdempotencyKey.findOne({
+      $or: [
+        { idempotencyKey: sessionId, status: "completed" },
+        {
+          idempotencyKey: sessionId,
+          status: "pending",
+          lockExpiry: { $gt: Date.now() },
+        },
+      ],
+    });
+    if (idempotencyKey) {
+      return res.status(200).json({
+        message: "Processing or completed payment session",
+      });
     }
-    const products = JSON.parse(session.metadata.products);
-    await updateProductStock(products, null, mongooseSession);
-
-    // Create order only after successful stock update
-    const newOrder = new Order({
-      user: session.metadata.userId,
-      products: products,
-      totalAmount: session.amount_total / 100,
-      stripeSessionId: sessionId,
-      name: session.metadata.name,
-      email: session.metadata.email,
-      phone: session.metadata.phone,
-      address: session.metadata.address,
-    });
-
-    // Save order and revert stock if order creation fails
-    console.log("Attempting to save order to MongoDB...");
-    const order = await newOrder.save();
-    console.log("✓ Order saved successfully:", order._id);
-
-    await User.findByIdAndUpdate(session.metadata.userId, {
-      ShoppingBagItems: [],
-    });
-    console.log("✓ User shopping bag cleared successfully");
-
-    await CheckoutSession.findOneAndUpdate(
+    // Use updateOne with upsert to handle both new and expired keys
+    await IdempotencyKey.updateOne(
+      { idempotencyKey: sessionId },
       {
-        sessionId: session.id,
-        userId: req.user._id,
-        status: "active",
+        $set: {
+          status: "pending",
+          lockExpiry: Date.now() + 24 * 60 * 60 * 1000,
+        },
       },
-      { status: "completed" }
+      { upsert: true }
     );
-    await IdempotencyKey.findOneAndUpdate({
-      idempotencyKey: sessionId,
-      status: "completed",
-    });
+    // Use a transaction to ensure all or none of the updates occur
+    const mongooseSession = await mongoose.startSession();
+    try {
+      mongooseSession.startTransaction();
 
-    await mongooseSession.commitTransaction();
+      if (session.payment_status === "paid") {
+        if (session.metadata.couponCode) {
+          await Coupon.findOneAndUpdate(
+            {
+              code: session.metadata.couponCode,
+              userId: session.metadata.userId,
+            },
+            {
+              isActive: false,
+            },
+            { session: mongooseSession }
+          );
+        }
 
-    console.log("=== CHECKOUT SUCCESS COMPLETED ===");
-    return res.status(200).json({
-      message:
-        "Payment successful, order created, and coupon deactivated if used",
-      orderId: order._id,
-    });
+        // create a new order
+        const products = JSON.parse(session.metadata.products);
+        const newOrder = new Order({
+          user: session.metadata.userId,
+          products: products.map((product) => ({
+            id: product.id,
+            quantity: product.quantity,
+            size: product.size || null,
+          })),
+          totalAmount: session.amount_total / 100, // convert from cents to dollars
+          stripeSessionId: sessionId,
+          name: session.metadata.name,
+          email: session.metadata.email,
+          phone: session.metadata.phone,
+          address: session.metadata.address,
+        });
+
+        console.log("Attempting to save order to MongoDB...");
+        const order = await newOrder.save({ session: mongooseSession });
+        console.log("✓ Order saved successfully:", order._id);
+
+        // Update product stock and reservation
+        await updateProductStock(products, sessionId, mongooseSession);
+
+        // Clear user's shopping bag
+        await User.findByIdAndUpdate(session.metadata.userId, { ShoppingBagItems: [] }, { session: mongooseSession });
+        console.log("✓ User shopping bag cleared successfully");
+
+        // update idempotency key
+        await IdempotencyKey.findOneAndUpdate(
+          { idempotencyKey: sessionId },
+          { status: "completed" },
+          { session: mongooseSession }
+        );
+
+        await mongooseSession.commitTransaction();
+
+        console.log("=== CHECKOUT SUCCESS COMPLETED ===");
+        return res.status(200).json({
+          message:
+            "Payment successful, order created, and coupon deactivated if used",
+          orderId: order._id,
+        });
+      }
+    } catch (error) {
+      // Rollback on failure
+      await mongooseSession.abortTransaction();
+      console.error("❌ Checkout success failed and rolled back:", error.message);
+      // Re-throw the error to handle it in the outer block
+      throw error;
+    } finally {
+      mongooseSession.endSession();
+    }
   } catch (error) {
-    // Rollback on failure
-    await mongooseSession.abortTransaction();
-    console.error("❌ Checkout success failed and rolled back:", error.message);
-    // Re-throw the error to handle it in the calling function
-    throw new Error(`Checkout success failed: ${error.message}`);
-  } finally {
-    mongooseSession.endSession();
+    console.error("Error in checkoutSuccess controller:", error.message);
+    res.status(500).json({ message: "Server error", error: error.message });
   }
 };

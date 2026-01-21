@@ -4,7 +4,7 @@ export const getWishlistItems = async (req, res) => {
     try {
         const wishlistItems = await Wishlist.find({ userId: req.user.id })
             .populate('productId', 'name price image');
-        
+
         res.json(wishlistItems.map(item => ({
             productId: item.productId._id,
             name: item.productId.name,
@@ -24,10 +24,10 @@ export const addToWishlist = async (req, res) => {
             productId
         });
         await wishlistItem.save();
-        
+
         const populatedItem = await Wishlist.findById(wishlistItem._id)
             .populate('productId', 'name price image');
-        
+
         res.status(201).json({
             productId: populatedItem.productId._id,
             name: populatedItem.productId.name,
@@ -49,11 +49,11 @@ export const removeFromWishlist = async (req, res) => {
             userId: req.user.id,
             productId: req.params.productId
         });
-        
+
         if (!wishlistItem) {
             return res.status(404).json({ message: 'Item not found in wishlist' });
         }
-        
+
         res.json({ message: 'Item removed from wishlist' });
     } catch (error) {
         res.status(500).json({ message: 'Server error' });
